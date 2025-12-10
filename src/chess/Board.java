@@ -6,6 +6,7 @@ public class Board {
     //default constructor - new game
     //load constructor - load game
 
+    //has undoMove, can't stack undo's
     //gets info from game for the next move
     //every odd turn is White, every even turn is Black
     //checkCastle(), checkEnPassant()
