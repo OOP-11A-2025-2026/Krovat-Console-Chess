@@ -1,5 +1,5 @@
 package chess;
 
 public abstract class Piece {
-    //regularMovement, undo, toString
+    //regularMovement, color (black or white)
 }

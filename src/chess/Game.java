@@ -1,18 +1,13 @@
 package chess;
 
 public class Game {
-    //creates and prints Board in the console
-    //gets the next move, interprets it from the user and Board uses only the interpreted ones
-    //repeat until the game ends (resign, draw)
-    //save and/or load
+    // Creates Board
+    // In a loop prints Board in the console and accepts input
+    // Handles draws, winners and resigns
+    // Has a save and load method that is in PGN format
+    // Has an interpreter method that transforms chess notations into move coordinates
+    // gets the next move, interprets it from the user and gives it to Board
 }
-
-
-
-// Black
-// board
-// White
-
 
 
 
