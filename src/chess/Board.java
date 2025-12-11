@@ -16,6 +16,41 @@ public class Board {
     //default constructor - new game
     // The board has to be set up with the beginning positions of the pieces:
     // Rooks in the corners, Knights next to the rooks etc.
+    // Above is black in lowercase letters, below is white in uppercase letters
+    Board() {
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                squares[i][j] = null;
+                if(i == 1) {
+                    squares[i][j] = new Pawn(false, 'p');
+                }
+                else if(i == 6) {
+                    squares[i][j] = new Pawn(true, 'P');
+                }
+            }
+        }
+
+        squares[0][0] = new Rook(false, 'r');
+        squares[0][7] = new Rook(false, 'r');
+        squares[7][0] = new Rook(true, 'R');
+        squares[7][7] = new Rook(true, 'R');
+
+        squares[0][1] = new Knight(false, 'n');
+        squares[0][6] = new Knight(false, 'n');
+        squares[7][1] = new Knight(true, 'N');
+        squares[7][6] = new Knight(true, 'N');
+
+        squares[0][2] = new Bishop(false, 'b');
+        squares[0][5] = new Bishop(false, 'b');
+        squares[7][2] = new Bishop(true, 'B');
+        squares[7][5] = new Bishop(true, 'B');
+
+        squares[0][3] = new Queen(false, 'q');
+        squares[7][3] = new Queen(true, 'Q');
+
+        squares[0][4] = new King(false, 'k');
+        squares[7][4] = new King(true, 'K');
+    }
 
     //load constructor - load game
     // This constructor accepts a Piece[8][8] array and COPIES its elements in squares

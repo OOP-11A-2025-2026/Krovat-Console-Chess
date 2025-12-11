@@ -2,8 +2,9 @@ package chess;
 
 public class Queen extends Piece {
 
-    Queen(boolean isWhite) {
-        super(isWhite);
+    Queen(boolean isWhite, char letter) {
+        if(letter != 'q' && letter != 'Q') throw new IllegalArgumentException("Invalid symbol. Q - White Queen and q - Black Queen");
+        super(isWhite, letter);
     }
 
     @Override

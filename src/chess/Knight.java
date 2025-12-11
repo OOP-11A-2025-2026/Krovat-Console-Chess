@@ -3,9 +3,8 @@ package chess;
 public class Knight extends Piece {
 
     public Knight(boolean isWhite, char letter) {
-        super(isWhite);
-        if(letter != 'N' || letter != 'n') throw new IllegalArgumentException("N - White Knight\nn - Black Knight");
-        this.letter = letter;
+        if(letter != 'N' && letter != 'n') throw new IllegalArgumentException("Invalid symbol. N - White Knight and n - Black Knight");
+        super(isWhite, letter);
     }
 
     @Override

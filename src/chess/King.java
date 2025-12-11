@@ -3,9 +3,8 @@ package chess;
 public class King extends Piece {
 
     public King(boolean isWhite, char letter) {
-        super(isWhite);
-        if(letter != 'K' || letter != 'k') throw new IllegalArgumentException("K - White King\nk - Black King");
-        this.letter = letter;
+        if(letter != 'K' && letter != 'k') throw new IllegalArgumentException("Invalid symbol. K - White King and k - Black King");
+        super(isWhite, letter);
     }
 
     @Override
