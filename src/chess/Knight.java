@@ -2,9 +2,20 @@ package chess;
 
 public class Knight extends Piece {
 
-    public Knight(boolean isWhite, char letter) {
-        if(letter != 'N' && letter != 'n') throw new IllegalArgumentException("Invalid symbol. N - White Knight and n - Black Knight");
+    public Knight(boolean isWhite) {
+        char letter = isWhite ? 'N' : 'n';
         super(isWhite, letter);
+    }
+
+    // Copy constructor
+    // If you have any mutable fields add them to it
+    public Knight(Knight other) {
+        super(other);
+    }
+
+    @Override
+    public Knight copy() {
+        return new Knight(this);
     }
 
     @Override

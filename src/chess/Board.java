@@ -1,7 +1,7 @@
 package chess;
 
 public class Board {
-    private Piece[][] squares = new Piece[8][8];
+    private Piece[][] squares;
 
     // INSTRUCTIONS - each block of comments is a different function
     // There are explanations to what the function should do
@@ -18,38 +18,33 @@ public class Board {
     // Rooks in the corners, Knights next to the rooks etc.
     // Above is black in lowercase letters, below is white in uppercase letters
     public Board() {
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                squares[i][j] = null;
-                if(i == 1) {
-                    squares[i][j] = new Pawn(false, 'p');
-                }
-                else if(i == 6) {
-                    squares[i][j] = new Pawn(true, 'P');
-                }
-            }
+        squares = new Piece[8][8];
+
+        for (int j = 0; j < 8; j++) {
+            squares[1][j] = new Pawn(false);
+            squares[6][j] = new Pawn(true);
         }
 
-        squares[0][0] = new Rook(false, 'r');
-        squares[0][7] = new Rook(false, 'r');
-        squares[7][0] = new Rook(true, 'R');
-        squares[7][7] = new Rook(true, 'R');
+        squares[0][0] = new Rook(false);
+        squares[0][7] = new Rook(false);
+        squares[7][0] = new Rook(true);
+        squares[7][7] = new Rook(true);
 
-        squares[0][1] = new Knight(false, 'n');
-        squares[0][6] = new Knight(false, 'n');
-        squares[7][1] = new Knight(true, 'N');
-        squares[7][6] = new Knight(true, 'N');
+        squares[0][1] = new Knight(false );
+        squares[0][6] = new Knight(false);
+        squares[7][1] = new Knight(true);
+        squares[7][6] = new Knight(true);
 
-        squares[0][2] = new Bishop(false, 'b');
-        squares[0][5] = new Bishop(false, 'b');
-        squares[7][2] = new Bishop(true, 'B');
-        squares[7][5] = new Bishop(true, 'B');
+        squares[0][2] = new Bishop(false);
+        squares[0][5] = new Bishop(false);
+        squares[7][2] = new Bishop(true);
+        squares[7][5] = new Bishop(true);
 
-        squares[0][3] = new Queen(false, 'q');
-        squares[7][3] = new Queen(true, 'Q');
+        squares[0][3] = new Queen(false);
+        squares[7][3] = new Queen(true);
 
-        squares[0][4] = new King(false, 'k');
-        squares[7][4] = new King(true, 'K');
+        squares[0][4] = new King(false);
+        squares[7][4] = new King(true);
     }
 
     //load constructor - load game
@@ -57,11 +52,13 @@ public class Board {
     // Make sure it is a deep copy and not a shallow one
     // Do not forget input validation
     public Board(Piece[][] squares) {
+        this.squares = new Piece[8][8];
+
         if(squares.length != 8) throw new IllegalArgumentException("Invalid array length");
         if(squares[0].length != 8) throw new IllegalArgumentException("Invalid array length");
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
-                this.squares[i][j] = squares[i][j];
+                this.squares[i][j] = squares[i][j].copy(); // Had to make a copy method to ensure deep copy
             }
         }
     }
@@ -151,4 +148,28 @@ public class Board {
     // Uppercase letters are for white
     // Lowercase letters are for black
     // Letters: N (Knight), Q, R, P, B, K (King)
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("  a b c d e f g h"); // file labels
+
+        for (int i = 0; i < 8; i++) {
+            sb.append(8 - i).append(" "); // rank labels
+
+            for (int j = 0; j < 8; j++) {
+                Piece piece = squares[i][j];
+                if (piece == null) {
+                    sb.append(". ");
+                }
+                else {
+                    sb.append(piece.getSymbol()).append(" ");
+                }
+            }
+
+            sb.append("\n");
+        }
+        
+        return sb.toString();
+    }
 }
