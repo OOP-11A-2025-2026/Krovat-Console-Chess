@@ -12,7 +12,7 @@ The third project of team Krovat for OOP class
 4. Обяснение на кода
 
 5. Екип. Разпределение на работата
-- Иванета - Piece
-- Виктор - 
-- Самуил - 
-- Игнат - 
+- Иванета - Board instructions, Piece, Coordinates, Queen
+- Виктор - Knight, King
+- Самуил - Pawn
+- Игнат - Rook, Bishop

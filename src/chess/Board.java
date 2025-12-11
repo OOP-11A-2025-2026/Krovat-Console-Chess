@@ -81,6 +81,9 @@ public class Board {
     // Checks if the king is stalemated
     // Returns true if he is, else false
 
+    // checkCollision()
+    // This function checks if there are any pieces between 2 sets of coordinates
+
     //gets info from game for the next move - what piece and where is it moving
     //every odd turn is White, every even turn is Black
     // This function handles move validation and updating the board:
@@ -92,6 +95,7 @@ public class Board {
     // calls regular movement - this should be a method every piece has, because every piece moves differently
     // It checks if the piece is moving how it should be and throws an exception if needed:
     // Rooks move up and down, Kings move only one square in all directions and etc.
+    // calls checkCollision() only if the piece is not a knight
     // calls checkPin()
 // checkCheck(during the move) - might not actually be needed, checkPin() might cover what we needed to call it for
     // calls promotion()

@@ -8,6 +8,13 @@ public class Queen extends Piece {
 
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
+        if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
+            throw new IllegalArgumentException("Invalid coordinates. The coordinates must not be the same");
+        if(from.getFirst() == to.getFirst() || from.getSecond() == to.getSecond())
+            return true; // Up and down movement
+        if(Math.abs(from.getSecond() - to.getSecond()) == Math.abs(from.getFirst() - to.getFirst()))
+            return true; // Diagonal movement
 
+        return false;
     }
 }
