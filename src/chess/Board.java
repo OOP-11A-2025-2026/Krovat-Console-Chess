@@ -17,7 +17,7 @@ public class Board {
     // The board has to be set up with the beginning positions of the pieces:
     // Rooks in the corners, Knights next to the rooks etc.
     // Above is black in lowercase letters, below is white in uppercase letters
-    Board() {
+    public Board() {
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 squares[i][j] = null;
@@ -56,6 +56,15 @@ public class Board {
     // This constructor accepts a Piece[8][8] array and COPIES its elements in squares
     // Make sure it is a deep copy and not a shallow one
     // Do not forget input validation
+    public Board(Piece[][] squares) {
+        if(squares.length != 8) throw new IllegalArgumentException("Invalid array length");
+        if(squares[0].length != 8) throw new IllegalArgumentException("Invalid array length");
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                this.squares[i][j] = squares[i][j];
+            }
+        }
+    }
 
     //has undoMove, can't stack undo's
     // Reverse the last played move
