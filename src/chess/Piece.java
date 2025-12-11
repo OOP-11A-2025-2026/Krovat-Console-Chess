@@ -8,7 +8,7 @@ abstract public class Piece {
         this.isWhite = isWhite;
     }
 
-    public abstract boolean regularMovement();
+    public abstract boolean regularMovement(Coordinates from, Coordinates to);
 
     public boolean isWhite() {
         return isWhite;
