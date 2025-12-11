@@ -172,4 +172,114 @@ public class Board {
         
         return sb.toString();
     }
+
+
+    /// PESHKA 2 SPECIAL MOVES
+    // Helper method to retrieve a piece using the Coordinates object
+public Piece getPiece(Coordinates coords) {
+    if (coords == null) return null;
+    return squares[coords.getFirst()][coords.getSecond()];
+}
+
+// Helper method to reset the enPassantEligible flag for all pawns za one-turn En Passant rule.
+private void resetAllEnPassantEligibility() {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            Piece piece = squares[i][j];
+            if (piece instanceof Pawn) {
+                ((Pawn) piece).setEnPassantEligible(false);
+            }
+        }
+    }
+}
+
+public boolean checkEnPassant(Coordinates from, Coordinates to) {
+    Piece movingPiece = getPiece(from);
+    
+    if (!(movingPiece instanceof Pawn)) {
+        return false;
+    }
+    Pawn pawn1 = (Pawn) movingPiece;
+    
+    // Check 1 & 2: Geometry and empty target square
+    if (!pawn1.regularMovement(from, to) || getPiece(to) != null) {
+        return false;
+    }
+
+    try {
+        // Find thepawn2 that must be captured
+        int targetPawnR = from.getFirst(); 
+        int targetPawnC = to.getSecond(); 
+        Coordinates targetPawnCoords = new Coordinates(targetPawnR, targetPawnC);
+        
+        Piece capturedPiece = getPiece(targetPawnCoords);
+        if (!(capturedPiece instanceof Pawn)) {
+            return false;
+        }
+        Pawn pawn2 = (Pawn) capturedPiece;
+        
+        // Peshkata e chujda
+        if (pawn2.isWhite() == pawn1.isWhite()) {
+            return false;
+        }
+        // Pawn - ?moved two squares last turn)
+        if (!pawn2.isEnPassantEligible()) {
+            return false;
+        }
+        
+    } catch (ClassCastException | IllegalArgumentException e) {
+        return false;
+    }
+    
+    return true; // En Passant - validen
+}
+
+public void enPassant(Coordinates from, Coordinates to) {
+    Pawn pawn1 = (Pawn) getPiece(from);
+    
+    //Remove the captured pawn (on row 'from', column 'to')
+    squares[from.getFirst()][to.getSecond()] = null;
+
+    //Move pawn1
+    squares[to.getFirst()][to.getSecond()] = pawn1;
+    squares[from.getFirst()][from.getSecond()] = null;
+    pawn1.setHasMoved(true);
+    
+    resetAllEnPassantEligibility();
+}
+
+public void promotion(Coordinates coords, char promotionChoice) {
+    Piece piece = getPiece(coords);
+    
+    if (!(piece instanceof Pawn)) {
+        return;
+    }
+    Pawn pawn = (Pawn) piece;
+
+    // Dali peshkata e stignala kraq
+    if ((pawn.isWhite() && coords.getFirst() != 0) || 
+        (!pawn.isWhite() && coords.getFirst() != 7)) {
+        return;
+    }
+    
+    Piece newPiece = null;
+    boolean isWhite = pawn.isWhite();
+    
+    // Smeni peshkata
+    switch (Character.toUpperCase(promotionChoice)) {
+        case 'Q': newPiece = new Queen(isWhite); break;
+        case 'R': newPiece = new Rook(isWhite); break;
+        case 'B': newPiece = new Bishop(isWhite); break;
+        case 'N': newPiece = new Knight(isWhite); break;
+        default:
+            newPiece = new Queen(isWhite);
+            break;
+    }
+    
+    squares[coords.getFirst()][coords.getSecond()] = newPiece;
+}
+
+    /// PESHKA 2 SPECIAL MOVES END
+    
+    
 }
