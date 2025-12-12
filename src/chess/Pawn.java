@@ -48,6 +48,8 @@ public class Pawn extends Piece {
         }
 
         // Diagonal Move
+        // The pawn should only move diagonally if it takes another pawn
+        // We will have to figure out some solution for that probably in Board
         if (colDiff == 1 && rowDiff == direction) {
             return true;
         }
