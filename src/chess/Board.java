@@ -173,6 +173,28 @@ public class Board {
         return sb.toString();
     }
 
+    public boolean checkCheck() {
+        //checks for, well, checks ig
+        return false;
+    }
+
+    public boolean hasValidMoves() {
+        //used for checks for mate & stalemate (and checks, I suppose)
+        //if()
+        return false;
+    }
+
+    public boolean checkMate() {
+        //if no valid moves AND in check
+        //if(checkCheck() && !hasValidMoves()) return true;
+        return false;
+    }
+
+    public boolean checkStalemate() {
+        //if no valid moves BUT no check
+        //if(!checkCheck() && !hasValidMoves()) return true;
+        return false;
+    }
 
     /// PESHKA 2 SPECIAL MOVES
     // Helper method to retrieve a piece using the Coordinates object
