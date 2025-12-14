@@ -233,12 +233,52 @@ public class Board {
         return false;
     }
 
-    public boolean checkMate() {
+    public boolean hasValidMoves(boolean isKingWhite) {
+        for(int fromFst = 0; fromFst < 8; fromFst++) {
+            for(int fromSnd = 0; fromSnd < 8; fromSnd++) {
+                Piece p = squares[fromFst][fromSnd];
 
+                if(p == null || p.isWhite() != isKingWhite)
+                    continue;
+
+                Coordinates from = new Coordinates(fromFst, fromSnd);
+                for(int toFst = 0; toFst < 8; toFst++) {
+                    for(int toSnd = 0; toSnd < 8; toSnd++) {
+                        Coordinates to = new Coordinates(toFst, toSnd);
+
+                        if(!p.regularMovement(from, to))
+                            continue;
+
+                        Piece target = squares[toFst][toSnd];
+
+                        if(target != null && target.isWhite() == isKingWhite)
+                            continue;
+
+                        if(!(p instanceof Knight) && checkCollision(from, to))
+                            continue;
+
+                        squares[toFst][toSnd] = p;
+                        squares[fromFst][fromSnd] = null;
+
+                        boolean kingInCheck = checkCheck(isKingWhite);
+
+                        squares[fromFst][fromSnd] = p;
+                        squares[toFst][toSnd] = null;
+
+                        if(!kingInCheck) return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
-    public boolean checkStalemate() {
-        
+    public boolean checkMate(boolean isKingWhite) {
+        return (!hasValidMoves(isKingWhite)) && (checkCheck(isKingWhite));
+    }
+
+    public boolean checkStalemate(boolean isKingWhite) {
+        return (!hasValidMoves(isKingWhite)) && (!checkCheck(isKingWhite));
     }
 
     // checkCastle()
@@ -341,50 +381,6 @@ public class Board {
         
         return sb.toString();
     }
-
-<<<<<<< Updated upstream
-//    public boolean checkCheck() {
-//        //checks for, well, checks ig
-//        return false;
-//    }
-//
-//    public boolean hasValidMoves() {
-//        //used for checks for mate & stalemate (and checks, I suppose)
-//        //if()
-//        return false;
-//    }
-//
-//    public boolean checkMate() {
-//        //if no valid moves AND in check
-//        //if(checkCheck() && !hasValidMoves()) return true;
-//        return false;
-//    }
-//
-//    public boolean checkStalemate() {
-//        //if no valid moves BUT no check
-//        //if(!checkCheck() && !hasValidMoves()) return true;
-//        return false;
-//    }
-// maybe all of these should be in Game, not Board, En Passant, too
-=======
-    public boolean hasValidMoves() {
-        //used for checks for mate & stalemate (and checks, I suppose)
-        //if()
-        return false;
-    }
-
-    public boolean checkMate() {
-        //if no valid moves AND in check
-        //if(checkCheck() && !hasValidMoves()) return true;
-        return false;
-    }
-
-    public boolean checkStalemate() {
-        //if no valid moves BUT no check
-        //if(!checkCheck() && !hasValidMoves()) return true;
-        return false;
-    }
->>>>>>> Stashed changes
 
     /// PESHKA 2 SPECIAL MOVES
     // Helper method to retrieve a piece using the Coordinates object
