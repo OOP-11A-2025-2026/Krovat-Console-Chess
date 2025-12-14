@@ -8,6 +8,9 @@ public class Board {
             { 1, 2}, { 1,-2}, {-1, 2}, {-1,-2}
     };
 
+    private Piece[][] undoSquares = null;
+    private boolean undoAvailable = false;
+
     // INSTRUCTIONS - each block of comments is a different function
     // There are explanations to what the function should do
     // The suggestions are to guide you, they don't have to be strictly followed
@@ -68,30 +71,49 @@ public class Board {
         }
     }
 
+    // Saves a snapshot of the board
+    private void saveUndoState() {
+        undoSquares = new Piece[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j] != null)
+                    undoSquares[i][j] = squares[i][j].copy();
+            }
+        }
+        undoAvailable = true;
+    }
+
     //has undoMove, can't stack undo's
     // Reverse the last played move
     // For example if I am black and play a move that is accepted and the board is updated
     // I can reverse this move or my opponent can play
     // I can't EVER reverse this move if my opponent plays
+    public void undoMove() {
+        if (!undoAvailable || undoSquares == null)
+            throw new IllegalStateException("No move to undo");
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                squares[i][j] = undoSquares[i][j];
+            }
+        }
+
+        undoSquares = null;
+        undoAvailable = false;
+    }
 
     // Helper method
     // Gets the coordinates of one of the kings
     private Coordinates getKingCoordinates(boolean isKingWhite) {
-        Coordinates kingCoordinates = new Coordinates(0, 0);
-        boolean kingFound = false;
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 if(squares[i][j] instanceof King && squares[i][j].isWhite() == isKingWhite) {
-                    kingCoordinates = new Coordinates(i, j);
-                    kingFound = true;
+                    return new Coordinates(i, j);
                 }
             }
         }
-        if(!kingFound) {
-            throw new InvalidMove("I can't find the king piece on the board.");
-        }
 
-        return kingCoordinates;
+        throw new InvalidMove("I can't find the king piece on the board.");
     }
 
     // checkCheck()
@@ -174,7 +196,7 @@ public class Board {
         // Checking up right
         for (int i = 1; kingCoordinates.getFirst() - i >= 0 && kingCoordinates.getSecond() + i < 8; i++) {
 
-            piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() + i];
+            piece = squares[kingCoordinates.getFirst() - i][kingCoordinates.getSecond() + i];
             if (piece == null) continue;
 
             if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
@@ -186,7 +208,7 @@ public class Board {
         // Checking up left
         for (int i = 1; kingCoordinates.getFirst() - i >= 0 && kingCoordinates.getSecond() - i >= 0; i++) {
 
-            piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() + i];
+            piece = squares[kingCoordinates.getFirst() - i][kingCoordinates.getSecond() - i];
             if (piece == null) continue;
 
             if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
@@ -212,19 +234,39 @@ public class Board {
         int opponentPawnDirection = isKingWhite ? -1 : 1;
 
         int first = kingCoordinates.getFirst() + opponentPawnDirection;
-        int leftSecond = kingCoordinates.getSecond() - 1;
-        int rightSecond = kingCoordinates.getSecond() - 1;
+
 
         if(first < 0 || first >= 8) {
-            if(leftSecond < 0 || leftSecond >= 8) {
+            int leftSecond = kingCoordinates.getSecond() - 1;
+            int rightSecond = kingCoordinates.getSecond() + 1;
+
+            if(leftSecond >= 0) {
+                piece = squares[first][leftSecond];
+                if(piece instanceof Pawn && piece.isWhite() == opponentColour) {
+                    return true;
+                }
+            }
+            if(rightSecond < 8) {
                 piece = squares[first][rightSecond];
                 if(piece instanceof Pawn && piece.isWhite() == opponentColour) {
                     return true;
                 }
             }
-            if(rightSecond < 0 || rightSecond >= 8) {
-                piece = squares[first][rightSecond];
-                if(piece instanceof Pawn && piece.isWhite() == opponentColour) {
+        }
+
+        // IDK if it is needed
+        // Enemy king adjacency check
+        for (int dr = -1; dr <= 1; dr++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                if (dr == 0 && dc == 0) continue;
+
+                int r = kingCoordinates.getFirst() + dr;
+                int c = kingCoordinates.getSecond() + dc;
+
+                if (r < 0 || r >= 8 || c < 0 || c >= 8) continue;
+
+                piece = squares[r][c];
+                if (piece instanceof King && piece.isWhite() != isKingWhite) {
                     return true;
                 }
             }
@@ -333,6 +375,54 @@ public class Board {
 
     // checkCollision()
     // This function checks if there are any pieces between 2 sets of coordinates
+    private boolean checkCollision(Coordinates from, Coordinates to) {
+        if(from == null || to == null) throw new IllegalArgumentException("Coordinates cannot be null");
+
+        // Up movement
+        if(from.getFirst() == to.getFirst()) {
+            int maxSecond = Math.max(to.getSecond(), from.getSecond());
+            int minSecond = Math.min(to.getSecond(), from.getSecond());
+
+            for(int i = minSecond + 1; i < maxSecond; i++) {
+                if(squares[from.getFirst()][i] != null) {
+                    return true;
+                }
+            }
+        }
+
+        // Down movement
+        else if(from.getSecond() == to.getSecond()) {
+            int maxFirst = Math.max(to.getFirst(), from.getFirst());
+            int minFirst = Math.min(to.getFirst(), from.getFirst());
+
+            for(int i = minFirst + 1; i < maxFirst; i++) {
+                if(squares[i][from.getSecond()] != null) {
+                    return true;
+                }
+            }
+        }
+
+        // Diagonal movement
+        else if(Math.abs(from.getSecond() - to.getSecond()) == Math.abs(from.getFirst() - to.getFirst())) {
+            int rowStep = Integer.compare(to.getFirst(), from.getFirst());
+            int colStep = Integer.compare(to.getSecond(), from.getSecond());
+
+            int row = from.getFirst() + rowStep;
+            int col = from.getSecond() + colStep;
+
+            while (row != to.getFirst() && col != to.getSecond()) {
+                if (squares[row][col] != null) {
+                    return true;
+                }
+                row += rowStep;
+                col += colStep;
+            }
+        }
+
+        else throw new InvalidMove("Coordinates have to be in a straight or diagonal line");
+
+        return false;
+    }
 
     //gets info from game for the next move - what piece and where is it moving
     //every odd turn is White, every even turn is Black
@@ -432,8 +522,6 @@ public boolean checkEnPassant(Coordinates from, Coordinates to) {
 
     return true;
 }
-
-
 
 public void enPassant(Coordinates from, Coordinates to) {
 
