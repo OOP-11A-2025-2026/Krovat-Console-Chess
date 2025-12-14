@@ -30,30 +30,25 @@ public class Pawn extends Piece {
     public void setEnPassantEligible(boolean enPassantEligible) { this.enPassantEligible = enPassantEligible; }
 
     @Override
-    public boolean regularMovement(Coordinates from, Coordinates to) {
-        int direction = isWhite() ? -1 : 1; // -1 for White (up), +1 for Black (down)
-        int rowDiff = to.getFirst() - from.getFirst();
-        int colDiff = Math.abs(to.getSecond() - from.getSecond());
+public boolean regularMovement(Coordinates from, Coordinates to) {
 
-        if (rowDiff == 0 && colDiff == 0) return false;
+    int direction = isWhite() ? -1 : 1;
+    int rowDiff = to.getFirst() - from.getFirst();
+    int colDiff = to.getSecond() - from.getSecond();
 
-        // One-Step Forward
-        if (colDiff == 0 && rowDiff == direction) {
-            return true;
-        }
+    // Same square
+    if (rowDiff == 0 && colDiff == 0) return false;
 
-        // two-Step Forward
-        if (!hasMoved && colDiff == 0 && rowDiff == 2 * direction) {
-            return true;
-        }
+    // One square forward
+    if (colDiff == 0 && rowDiff == direction) return true;
 
-        // Diagonal Move
-        // The pawn should only move diagonally if it takes another pawn
-        // We will have to figure out some solution for that probably in Board
-        if (colDiff == 1 && rowDiff == direction) {
-            return true;
-        }
-        
-        return false;
-    }
+    // Two squares forward (first move only)
+    if (!hasMoved && colDiff == 0 && rowDiff == 2 * direction) return true;
+
+    // Diagonal capture (Board confirms capture)
+    if (Math.abs(colDiff) == 1 && rowDiff == direction) return true;
+
+    return false;
+}
+
 }
