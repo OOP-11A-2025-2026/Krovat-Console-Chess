@@ -3,6 +3,11 @@ package chess;
 public class Board {
     private Piece[][] squares;
 
+    private final int[][] knightMoves = {
+            { 2, 1}, { 2,-1}, {-2, 1}, {-2,-1},
+            { 1, 2}, { 1,-2}, {-1, 2}, {-1,-2}
+    };
+
     // INSTRUCTIONS - each block of comments is a different function
     // There are explanations to what the function should do
     // The suggestions are to guide you, they don't have to be strictly followed
@@ -69,8 +74,164 @@ public class Board {
     // I can reverse this move or my opponent can play
     // I can't EVER reverse this move if my opponent plays
 
+    // Helper method
+    // Gets the coordinates of one of the kings
+    private Coordinates getKingCoordinates(boolean isKingWhite) {
+        Coordinates kingCoordinates = new Coordinates(0, 0);
+        boolean kingFound = false;
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                if(squares[i][j] instanceof King && squares[i][j].isWhite() == isKingWhite) {
+                    kingCoordinates = new Coordinates(i, j);
+                    kingFound = true;
+                }
+            }
+        }
+        if(!kingFound) {
+            throw new InvalidMove("I can't find the king piece on the board.");
+        }
+
+        return kingCoordinates;
+    }
+
     // checkCheck()
     // Checks if the king is in check and returns true if it is, else - false
+    // isKingWhite is a boolean used to tell if you are trying to see if the white or black king is in check
+    public boolean checkCheck(boolean isKingWhite) {
+        boolean opponentColour = !isKingWhite;
+
+        // Finding the coordinates of the king piece
+        Coordinates kingCoordinates = getKingCoordinates(isKingWhite);
+
+        Piece piece;
+        // Checking down
+        for(int i = kingCoordinates.getFirst() + 1; i < 8; i++) {
+            piece = squares[i][kingCoordinates.getSecond()];
+            if(piece == null) continue;
+
+            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+                return true;
+            }
+            else break;
+        }
+
+        // Checking up
+        for(int i = kingCoordinates.getFirst() - 1; i >= 0; i--) {
+            piece = squares[i][kingCoordinates.getSecond()];
+            if(piece == null) continue;
+
+            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+                return true;
+            }
+            else break;
+        }
+
+        // Checking right
+        for(int i = kingCoordinates.getSecond() + 1; i < 8; i++) {
+            piece = squares[kingCoordinates.getFirst()][i];
+            if(piece == null) continue;
+
+            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+                return true;
+            }
+            else break;
+        }
+
+        // Checking left
+        for(int i = kingCoordinates.getSecond() - 1; i >= 0; i--) {
+            piece = squares[kingCoordinates.getFirst()][i];
+            if(piece == null) continue;
+
+            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+                return true;
+            }
+            else break;
+        }
+
+        // Checking down right
+        for (int i = 1; kingCoordinates.getFirst() + i < 8 && kingCoordinates.getSecond() + i < 8; i++) {
+
+            piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() + i];
+            if (piece == null) continue;
+
+            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+                return true;
+            }
+            else break;
+        }
+
+        // Checking down left
+        for (int i = 1; kingCoordinates.getFirst() + i < 8 && kingCoordinates.getSecond() - i >= 0; i++) {
+
+            piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() - i];
+            if (piece == null) continue;
+
+            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+                return true;
+            } else break;
+        }
+
+        // Checking up right
+        for (int i = 1; kingCoordinates.getFirst() - i >= 0 && kingCoordinates.getSecond() + i < 8; i++) {
+
+            piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() + i];
+            if (piece == null) continue;
+
+            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+                return true;
+            }
+            else break;
+        }
+
+        // Checking up left
+        for (int i = 1; kingCoordinates.getFirst() - i >= 0 && kingCoordinates.getSecond() - i >= 0; i++) {
+
+            piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() + i];
+            if (piece == null) continue;
+
+            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+                return true;
+            }
+            else break;
+        }
+
+        // Checking knight moves
+        for (int[] knightMove : knightMoves) {
+            int first = kingCoordinates.getFirst() + knightMove[0];
+            int second = kingCoordinates.getSecond() + knightMove[1];
+
+            if (first < 0 || first >= 8 || second < 0 || second >= 8) continue;
+
+            piece = squares[first][second];
+            if (piece instanceof Knight && piece.isWhite() == opponentColour) {
+                return true;
+            }
+        }
+
+        // Pawn check
+        int opponentPawnDirection = isKingWhite ? -1 : 1;
+
+        int first = kingCoordinates.getFirst() + opponentPawnDirection;
+        int leftSecond = kingCoordinates.getSecond() - 1;
+        int rightSecond = kingCoordinates.getSecond() - 1;
+
+        if(first < 0 || first >= 8) {
+            if(leftSecond < 0 || leftSecond >= 8) {
+                piece = squares[first][rightSecond];
+                if(piece instanceof Pawn && piece.isWhite() == opponentColour) {
+                    return true;
+                }
+            }
+            if(rightSecond < 0 || rightSecond >= 8) {
+                piece = squares[first][rightSecond];
+                if(piece instanceof Pawn && piece.isWhite() == opponentColour) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     // checkCastle()
     // Checks if it is a king move
@@ -173,6 +334,7 @@ public class Board {
         return sb.toString();
     }
 
+<<<<<<< Updated upstream
 //    public boolean checkCheck() {
 //        //checks for, well, checks ig
 //        return false;
@@ -196,6 +358,25 @@ public class Board {
 //        return false;
 //    }
 // maybe all of these should be in Game, not Board, En Passant, too
+=======
+    public boolean hasValidMoves() {
+        //used for checks for mate & stalemate (and checks, I suppose)
+        //if()
+        return false;
+    }
+
+    public boolean checkMate() {
+        //if no valid moves AND in check
+        //if(checkCheck() && !hasValidMoves()) return true;
+        return false;
+    }
+
+    public boolean checkStalemate() {
+        //if no valid moves BUT no check
+        //if(!checkCheck() && !hasValidMoves()) return true;
+        return false;
+    }
+>>>>>>> Stashed changes
 
     /// PESHKA 2 SPECIAL MOVES
     // Helper method to retrieve a piece using the Coordinates object
