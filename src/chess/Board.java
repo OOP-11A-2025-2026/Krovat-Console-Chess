@@ -233,6 +233,14 @@ public class Board {
         return false;
     }
 
+    public boolean checkMate() {
+
+    }
+
+    public boolean checkStalemate() {
+        
+    }
+
     // checkCastle()
     // Checks if it is a king move
     // Checks if the king is moving 2 squares to the left or right

@@ -21,11 +21,10 @@ public class Bishop extends Piece {
         if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
             throw new IllegalArgumentException("Invalid coordinates. The coordinates must not be the same");
 
-
-        if(Math.abs(from.getFirst() - to.getFirst()) ==
-                Math.abs(from.getSecond() - to.getSecond()))
-            return true;
-
+        if(isWithinBoard(to)) {
+            return Math.abs(from.getFirst() - to.getFirst()) ==
+                    Math.abs(from.getSecond() - to.getSecond());
+        }
         return false;
     }
 }

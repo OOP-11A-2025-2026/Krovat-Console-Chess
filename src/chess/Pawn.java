@@ -30,11 +30,17 @@ public class Pawn extends Piece {
     public void setEnPassantEligible(boolean enPassantEligible) { this.enPassantEligible = enPassantEligible; }
 
     @Override
-public boolean regularMovement(Coordinates from, Coordinates to) {
+    public boolean regularMovement(Coordinates from, Coordinates to) {
+        if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
+            throw new IllegalArgumentException("Invalid coordinates. The coordinates must not be the same");
+
+        if(!isWithinBoard(to)) {
+            return false;
+        }
 
     int direction = isWhite() ? -1 : 1;
-    int rowDiff = to.getFirst() - from.getFirst();
-    int colDiff = to.getSecond() - from.getSecond();
+    int rowDiff = Math.abs(to.getFirst() - from.getFirst());
+    int colDiff = Math.abs(to.getSecond() - from.getSecond());
 
     // Same square
     if (rowDiff == 0 && colDiff == 0) return false;

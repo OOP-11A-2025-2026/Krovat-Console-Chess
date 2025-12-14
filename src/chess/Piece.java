@@ -16,6 +16,10 @@ abstract public class Piece {
         this.symbol = other.symbol;
     }
 
+    public boolean isWithinBoard(Coordinates pos) {
+        return (pos.getFirst() >= 0 && pos.getFirst() <= 7) && (pos.getSecond() >= 0 && pos.getSecond() <= 7);
+    }
+
     public abstract Piece copy();
 
     public abstract boolean regularMovement(Coordinates from, Coordinates to);

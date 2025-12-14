@@ -20,9 +20,14 @@ public class King extends Piece {
 
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
-        int dx = Math.abs(to.getFirst() - from.getFirst());
-        int dy = Math.abs(to.getSecond() - from.getSecond());
+        if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
+            throw new IllegalArgumentException("Invalid coordinates. The coordinates must not be the same");
 
-        return (dx <= 1 && dy <= 1);
+        if(isWithinBoard(to)) {
+            int dx = Math.abs(to.getFirst() - from.getFirst());
+            int dy = Math.abs(to.getSecond() - from.getSecond());
+            return dx <= 1 && dy <= 1 || dx * dy == 1;
+        }
+        return false;
     }
 }
