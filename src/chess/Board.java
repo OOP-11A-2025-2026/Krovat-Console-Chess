@@ -304,7 +304,7 @@ public class Board {
                         boolean kingInCheck = checkCheck(isKingWhite);
 
                         squares[fromFst][fromSnd] = p;
-                        squares[toFst][toSnd] = null;
+                        squares[toFst][toSnd] = target; // Should probably be target not null
 
                         if(!kingInCheck) return true;
                     }
@@ -334,13 +334,13 @@ public class Board {
     // Checks that the king doesn't end up on a square attacked by enemy piece
     // If all checks pass return true. If one of the checks above the line fails return false
 
-    // Castle()
+    // castle()
     // Moves the king and rook to the right places
     // Careful! The king can castle both right and left side and there are slight differences
     // call only AFTER checkCastle()
 
     // checkCastle()
-    public boolean checkCastle(Coordinates from, Coordinates to) {
+    private boolean checkCastle(Coordinates from, Coordinates to) {
         Piece king = getPiece(from);
         if (!(king instanceof King)) return false;
         int row = from.getFirst();
@@ -374,8 +374,8 @@ public class Board {
         return true;
     }
 
-    // Castle()
-    public void Castle(Coordinates from, Coordinates to) {
+    // castle()
+    private void castle(Coordinates from, Coordinates to) {
         if (!checkCastle(from, to)) throw new InvalidMove("Illegal castling attempt");
 
         int row = from.getFirst();
@@ -479,10 +479,10 @@ public class Board {
     //gets info from game for the next move - what piece and where is it moving
     //every odd turn is White, every even turn is Black
     // This function handles move validation and updating the board:
-    // calls checkCastle() and depending on the result calls Castle()
-    // If Castle() is called the function should end in some way
+    // calls checkCastle() and depending on the result calls castle()
+    // If castle() is called the function should end in some way
     // There is no reason to continue checking if the move was made
-    // calls checkEnPassant() -> EnPassant() (same as checkCastle() and Castle())
+    // calls checkEnPassant() -> EnPassant() (same as checkCastle() and castle())
     // If EnPassant() is called the function should end in some way
     // calls regular movement - this should be a method every piece has, because every piece moves differently
     // It checks if the piece is moving how it should be and throws an exception if needed:
@@ -493,7 +493,87 @@ public class Board {
     // calls promotion()
     // calls checkMate(after the move) and maybe returns a winner or something like that
     // calls checkStalemate(after the move) and maybe returns a draw or something like that
-    
+    public int makeMove(Coordinates from, Coordinates to, boolean isWhiteTurn, char promotionChoice) {
+
+        if (from == null || to == null) throw new IllegalArgumentException("Coordinates cannot be null");
+
+        Piece moving = getPiece(from);
+        if (moving == null) throw new InvalidMove("No piece on starting square");
+
+        if (moving.isWhite() != isWhiteTurn) throw new InvalidMove("Not your turn");
+
+        Piece target = getPiece(to);
+        if (target != null && target.isWhite() == isWhiteTurn) throw new InvalidMove("Cannot capture your own piece");
+
+        if (moving instanceof King) {
+            if (checkCastle(from, to)) {
+                saveUndoState();
+                castle(from, to);
+                return 0;
+            }
+        }
+
+        if (moving instanceof Pawn) {
+            if (checkEnPassant(from, to)) {
+                saveUndoState();
+                enPassant(from, to);
+                resetAllEnPassantEligibility();
+                return 0;
+            }
+        }
+
+        if (!moving.regularMovement(from, to))
+            throw new InvalidMove("Illegal movement");
+
+        if (!(moving instanceof Knight) && checkCollision(from, to))
+            throw new InvalidMove("Path blocked");
+
+        checkPin(from, to);
+
+        saveUndoState();
+
+        squares[to.getFirst()][to.getSecond()] = moving;
+        squares[from.getFirst()][from.getSecond()] = null;
+
+        if(moving instanceof Rook) {
+            ((Rook) moving).setHasMoved(true);
+        }
+        else if(moving instanceof Pawn) {
+            ((Pawn) moving).setHasMoved(true);
+        }
+        else if(moving instanceof King) {
+            ((King) moving).setHasMoved(true);
+        }
+
+        resetAllEnPassantEligibility();
+
+        if (moving instanceof Pawn) {
+            Pawn pawn = (Pawn) moving;
+
+            int startRow = pawn.isWhite() ? 6 : 1;
+            int diff = Math.abs(from.getFirst() - to.getFirst());
+
+            if (from.getFirst() == startRow && diff == 2) {
+                pawn.setEnPassantEligible(true);
+            }
+
+            promotion(to, promotionChoice);
+        }
+
+        boolean opponentWhite = !moving.isWhite();
+
+        if (checkMate(opponentWhite)) {
+            System.out.println("CHECKMATE!");
+            return 1;
+        } else if (checkStalemate(opponentWhite)) {
+            System.out.println("STALEMATE!");
+            return 2;
+        } else if (checkCheck(opponentWhite)) {
+            System.out.println("CHECK!");
+        }
+
+        return 0;
+    }
 
 
     // toString method
@@ -528,7 +608,7 @@ public class Board {
     }
 
     // Helper method to retrieve a piece using the Coordinates object
-    public Piece getPiece(Coordinates coords) {
+    private Piece getPiece(Coordinates coords) {
         if (coords == null) return null;
         return squares[coords.getFirst()][coords.getSecond()];
     }
@@ -545,7 +625,7 @@ public class Board {
         }
     }
 
-    public boolean checkEnPassant(Coordinates from, Coordinates to) {
+    private boolean checkEnPassant(Coordinates from, Coordinates to) {
 
         Piece moving = getPiece(from);
         if (!(moving instanceof Pawn)) return false;
@@ -577,7 +657,7 @@ public class Board {
         return true;
     }
 
-    public void enPassant(Coordinates from, Coordinates to) {
+    private void enPassant(Coordinates from, Coordinates to) {
 
         Pawn pawn = (Pawn) getPiece(from);
 
@@ -593,7 +673,7 @@ public class Board {
         //resetAllEnPassantEligibility();
     }
 
-    public void promotion(Coordinates coords, char promotionChoice) {
+    private void promotion(Coordinates coords, char promotionChoice) {
 
         Piece piece = getPiece(coords);
         if (!(piece instanceof Pawn)) return;
@@ -604,6 +684,7 @@ public class Board {
         int startRow = pawn.isWhite() ? 6 : 1;
         int diff = Math.abs(coords.getFirst() - startRow);
 
+        // IDK if this should be left here, in makeMove we already use setEnPassantEligible
         if (diff == 2) {
             pawn.setEnPassantEligible(true);
         }
@@ -627,7 +708,7 @@ public class Board {
         squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
 
-    public void checkPin(Coordinates from, Coordinates to) {
+    private void checkPin(Coordinates from, Coordinates to) {
 
         Piece movingPiece = getPiece(from);
         Piece capturedPiece = getPiece(to);
@@ -646,7 +727,7 @@ public class Board {
         squares[to.getFirst()][to.getSecond()] = capturedPiece;
 
         if (kingInCheck) {
-            throw new IllegalArgumentException("Move leaves king in check");
+            throw new InvalidMove("Move leaves king in check");
         }
     }
 
