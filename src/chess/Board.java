@@ -38,7 +38,7 @@ public class Board {
         squares[7][0] = new Rook(true);
         squares[7][7] = new Rook(true);
 
-        squares[0][1] = new Knight(false );
+        squares[0][1] = new Knight(false);
         squares[0][6] = new Knight(false);
         squares[7][1] = new Knight(true);
         squares[7][6] = new Knight(true);
@@ -437,7 +437,7 @@ public class Board {
     // Rooks move up and down, Kings move only one square in all directions and etc.
     // calls checkCollision() only if the piece is not a knight
     // calls checkPin()
-// checkCheck(during the move) - might not actually be needed, checkPin() might cover what we needed to call it for
+    // checkCheck(during the move) - might not actually be needed, checkPin() might cover what we needed to call it for
     // calls promotion()
     // calls checkMate(after the move) and maybe returns a winner or something like that
     // calls checkStalemate(after the move) and maybe returns a draw or something like that
@@ -472,7 +472,6 @@ public class Board {
         return sb.toString();
     }
 
-    /// PESHKA 2 SPECIAL MOVES
     // Helper method to retrieve a piece using the Coordinates object
     public Piece getPiece(Coordinates coords) {
         if (coords == null) return null;
@@ -491,117 +490,111 @@ public class Board {
         }
     }
 
-public boolean checkEnPassant(Coordinates from, Coordinates to) {
+    public boolean checkEnPassant(Coordinates from, Coordinates to) {
 
-    Piece moving = getPiece(from);
-    if (!(moving instanceof Pawn)) return false;
+        Piece moving = getPiece(from);
+        if (!(moving instanceof Pawn)) return false;
 
-    Pawn pawn = (Pawn) moving;
-    int direction = pawn.isWhite() ? -1 : 1;
+        Pawn pawn = (Pawn) moving;
+        int direction = pawn.isWhite() ? -1 : 1;
 
-    // Diagonal move
-    if (to.getFirst() - from.getFirst() != direction ||
-        Math.abs(to.getSecond() - from.getSecond()) != 1)
-        return false;
+        // Diagonal move
+        if (to.getFirst() - from.getFirst() != direction ||
+            Math.abs(to.getSecond() - from.getSecond()) != 1)
+            return false;
 
-    // Target square must be empty
-    if (getPiece(to) != null) return false;
+        // Target square must be empty
+        if (getPiece(to) != null) return false;
 
-    // Pawn to be captured
-    Coordinates enemyCoords =
-            new Coordinates(from.getFirst(), to.getSecond());
+        // Pawn to be captured
+        Coordinates enemyCoords =
+                new Coordinates(from.getFirst(), to.getSecond());
 
-    Piece enemy = getPiece(enemyCoords);
-    if (!(enemy instanceof Pawn)) return false;
+        Piece enemy = getPiece(enemyCoords);
+        if (!(enemy instanceof Pawn)) return false;
 
-    Pawn enemyPawn = (Pawn) enemy;
+        Pawn enemyPawn = (Pawn) enemy;
 
-    // Must be enemy and last-move double step
-    if (enemyPawn.isWhite() == pawn.isWhite()) return false;
-    if (!enemyPawn.isEnPassantEligible()) return false;
+        // Must be enemy and last-move double step
+        if (enemyPawn.isWhite() == pawn.isWhite()) return false;
+        if (!enemyPawn.isEnPassantEligible()) return false;
 
-    return true;
-}
-
-public void enPassant(Coordinates from, Coordinates to) {
-
-    Pawn pawn = (Pawn) getPiece(from);
-
-    // Remove captured pawn
-    squares[from.getFirst()][to.getSecond()] = null;
-
-    // Move pawn
-    squares[to.getFirst()][to.getSecond()] = pawn;
-    squares[from.getFirst()][from.getSecond()] = null;
-
-    pawn.setHasMoved(true);
-
-    //resetAllEnPassantEligibility();
-}
-
-
-public void promotion(Coordinates coords, char promotionChoice) {
-
-    Piece piece = getPiece(coords);
-    if (!(piece instanceof Pawn)) return;
-
-    Pawn pawn = (Pawn) piece;
-    pawn.setHasMoved(true);
-
-    int startRow = pawn.isWhite() ? 6 : 1;
-    int diff = Math.abs(coords.getFirst() - startRow);
-
-    if (diff == 2) {
-        pawn.setEnPassantEligible(true);
+        return true;
     }
 
-    // Promotion check
-    if ((pawn.isWhite() && coords.getFirst() != 0) ||
-        (!pawn.isWhite() && coords.getFirst() != 7)) {
-        return;
+    public void enPassant(Coordinates from, Coordinates to) {
+
+        Pawn pawn = (Pawn) getPiece(from);
+
+        // Remove captured pawn
+        squares[from.getFirst()][to.getSecond()] = null;
+
+        // Move pawn
+        squares[to.getFirst()][to.getSecond()] = pawn;
+        squares[from.getFirst()][from.getSecond()] = null;
+
+        pawn.setHasMoved(true);
+
+        //resetAllEnPassantEligibility();
     }
 
-    boolean isWhite = pawn.isWhite();
-    Piece newPiece;
 
-    switch (Character.toUpperCase(promotionChoice)) {
-        case 'R': newPiece = new Rook(isWhite); break;
-        case 'B': newPiece = new Bishop(isWhite); break;
-        case 'N': newPiece = new Knight(isWhite); break;
-        default: newPiece = new Queen(isWhite);
+    public void promotion(Coordinates coords, char promotionChoice) {
+
+        Piece piece = getPiece(coords);
+        if (!(piece instanceof Pawn)) return;
+
+        Pawn pawn = (Pawn) piece;
+        pawn.setHasMoved(true);
+
+        int startRow = pawn.isWhite() ? 6 : 1;
+        int diff = Math.abs(coords.getFirst() - startRow);
+
+        if (diff == 2) {
+            pawn.setEnPassantEligible(true);
+        }
+
+        // Promotion check
+        if ((pawn.isWhite() && coords.getFirst() != 0) ||
+            (!pawn.isWhite() && coords.getFirst() != 7)) {
+            return;
+        }
+
+        boolean isWhite = pawn.isWhite();
+        Piece newPiece;
+
+        switch (Character.toUpperCase(promotionChoice)) {
+            case 'R': newPiece = new Rook(isWhite); break;
+            case 'B': newPiece = new Bishop(isWhite); break;
+            case 'N': newPiece = new Knight(isWhite); break;
+            default: newPiece = new Queen(isWhite);
+        }
+
+        squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
 
-    squares[coords.getFirst()][coords.getSecond()] = newPiece;
-}
 
-
-    /// PESHKA 2 SPECIAL MOVES END
-    /// 
-    /// check pin
     public void checkPin(Coordinates from, Coordinates to) {
 
-    Piece movingPiece = getPiece(from);
-    Piece capturedPiece = getPiece(to);
+        Piece movingPiece = getPiece(from);
+        Piece capturedPiece = getPiece(to);
 
-    if (movingPiece == null)
-        throw new IllegalArgumentException("No piece to move");
+        if (movingPiece == null)
+            throw new IllegalArgumentException("No piece to move");
 
-    // Make temporary move
-    squares[to.getFirst()][to.getSecond()] = movingPiece;
-    squares[from.getFirst()][from.getSecond()] = null;
+        // Make temporary move
+        squares[to.getFirst()][to.getSecond()] = movingPiece;
+        squares[from.getFirst()][from.getSecond()] = null;
 
-    boolean kingInCheck = checkCheck(movingPiece.isWhite());
+        boolean kingInCheck = checkCheck(movingPiece.isWhite());
 
-    // Undo move
-    squares[from.getFirst()][from.getSecond()] = movingPiece;
-    squares[to.getFirst()][to.getSecond()] = capturedPiece;
+        // Undo move
+        squares[from.getFirst()][from.getSecond()] = movingPiece;
+        squares[to.getFirst()][to.getSecond()] = capturedPiece;
 
-    if (kingInCheck) {
-        throw new IllegalArgumentException("Move leaves king in check");
+        if (kingInCheck) {
+            throw new IllegalArgumentException("Move leaves king in check");
+        }
     }
-}
-
-    /// check pin end
-    
     
 }

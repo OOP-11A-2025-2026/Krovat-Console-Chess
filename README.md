@@ -13,6 +13,6 @@ The third project of team Krovat for OOP class
 
 5. Екип. Разпределение на работата
 - Иванета - Board instructions, constructors, toString, getKingCoordinates, checkCheck, checkCollision and undo, Piece, Coordinates, Queen, copy method and copy constructors in all pieces, InvalidMove
-- Виктор - Knight, King
-- Самуил - Pawn
-- Игнат - Rook, Bishop
+- Виктор - Knight, King, checkMate, checkStalemate
+- Самуил - Pawn, Promotion, En Passant
+- Игнат - Rook, Bishop, checkCastle
