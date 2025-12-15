@@ -235,8 +235,7 @@ public class Board {
 
         int first = kingCoordinates.getFirst() + opponentPawnDirection;
 
-
-        if(first < 0 || first >= 8) {
+        if(first >= 0 && first < 8) {
             int leftSecond = kingCoordinates.getSecond() - 1;
             int rightSecond = kingCoordinates.getSecond() + 1;
 
@@ -340,6 +339,59 @@ public class Board {
     // Careful! The king can castle both right and left side and there are slight differences
     // call only AFTER checkCastle()
 
+    // checkCastle()
+    public boolean checkCastle(Coordinates from, Coordinates to) {
+        Piece king = getPiece(from);
+        if (!(king instanceof King)) return false;
+        int row = from.getFirst();
+        int colDiff = to.getSecond() - from.getSecond();
+        if (Math.abs(colDiff) != 2) return false;
+        if (checkCheck(king.isWhite()))
+            throw new InvalidMove("King is in check");
+        int rookCol = colDiff > 0 ? 7 : 0;
+        Piece rook = squares[row][rookCol];
+        if (!(rook instanceof Rook))
+            throw new InvalidMove("No rook");
+        if (((King) king).hasMoved() || ((Rook) rook).hasMoved())
+            throw new InvalidMove("Moved already");
+        int step = colDiff > 0 ? 1 : -1;
+        for (int c = from.getSecond() + step; c != rookCol; c += step) {
+            if (squares[row][c] != null)
+                throw new InvalidMove("Piece in between");
+        }
+        for (int c = from.getSecond(); c != to.getSecond() + step; c += step) {
+            Piece original = squares[row][c];
+
+            squares[from.getFirst()][from.getSecond()] = null;
+            squares[row][c] = king;
+
+            boolean inCheck = checkCheck(king.isWhite());
+            squares[row][c] = original;
+            squares[from.getFirst()][from.getSecond()] = king;
+
+            if (inCheck) throw new InvalidMove("Square attacked");
+        }
+        return true;
+    }
+
+    // Castle()
+    public void Castle(Coordinates from, Coordinates to) {
+        if (!checkCastle(from, to)) throw new InvalidMove("Illegal castling attempt");
+
+        int row = from.getFirst();
+        int colDiff = to.getSecond() - from.getSecond();
+        int rookFrom = colDiff > 0 ? 7 : 0;
+        int rookTo = colDiff > 0 ? to.getSecond() - 1 : to.getSecond() + 1;
+        Piece king = squares[row][from.getSecond()];
+        Piece rook = squares[row][rookFrom];
+        squares[row][to.getSecond()] = king;
+        squares[row][rookTo] = rook;
+        squares[row][from.getSecond()] = null;
+        squares[row][rookFrom] = null;
+        ((King) king).setHasMoved(true);
+        ((Rook) rook).setHasMoved(true);
+    }
+
     // checkEnPassant()
     // Checks that it is a pawn move
     // Checks that the pawn (pawn1) is next to another pawn (pawn2)
@@ -441,6 +493,8 @@ public class Board {
     // calls promotion()
     // calls checkMate(after the move) and maybe returns a winner or something like that
     // calls checkStalemate(after the move) and maybe returns a draw or something like that
+    
+
 
     // toString method
     // Returns a string that is going to get printed on the console

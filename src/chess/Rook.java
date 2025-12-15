@@ -1,6 +1,7 @@
 package chess;
 
 public class Rook extends Piece {
+    private boolean hasMoved;
 
     public Rook(boolean isWhite) {
         char letter = isWhite ? 'R' : 'r';
@@ -26,4 +27,7 @@ public class Rook extends Piece {
 
         return false;
     }
+
+    public boolean hasMoved() { return hasMoved; }
+    public void setHasMoved(boolean moved) { this.hasMoved = moved; }
 }

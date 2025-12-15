@@ -1,6 +1,7 @@
 package chess;
 
 public class King extends Piece {
+    private boolean hasMoved;
 
     public King(boolean isWhite) {
         char letter = isWhite ? 'K' : 'k';
@@ -30,4 +31,7 @@ public class King extends Piece {
         }
         return false;
     }
+
+    public boolean hasMoved() { return hasMoved; }
+    public void setHasMoved(boolean moved) { this.hasMoved = moved; }
 }
