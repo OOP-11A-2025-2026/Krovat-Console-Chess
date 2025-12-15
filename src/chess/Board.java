@@ -447,6 +447,7 @@ public class Board {
     // Uppercase letters are for white
     // Lowercase letters are for black
     // Letters: N (Knight), Q, R, P, B, K (King)
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -468,7 +469,7 @@ public class Board {
 
             sb.append("\n");
         }
-        
+
         return sb.toString();
     }
 
@@ -538,7 +539,6 @@ public class Board {
         //resetAllEnPassantEligibility();
     }
 
-
     public void promotion(Coordinates coords, char promotionChoice) {
 
         Piece piece = getPiece(coords);
@@ -573,7 +573,6 @@ public class Board {
         squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
 
-
     public void checkPin(Coordinates from, Coordinates to) {
 
         Piece movingPiece = getPiece(from);
@@ -596,5 +595,5 @@ public class Board {
             throw new IllegalArgumentException("Move leaves king in check");
         }
     }
-    
+
 }
