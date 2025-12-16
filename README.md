@@ -3,7 +3,7 @@ The third project of team Krovat for OOP class
 
 ## (BG)
 
-1. Описание\
+1. Описание
 Конзолен шах, с опция за запазване на играта, зареждане на предишна игра и връщане един ход назад. По време на играта играч може да преложи равенство или да се предаде.
 
 
@@ -12,7 +12,7 @@ The third project of team Krovat for OOP class
 
 3. Алгоритъм\
 State diagram:
-![img.png](img.png)\
+![img.png](img.png)
 
 
 4. Обяснение на кода
