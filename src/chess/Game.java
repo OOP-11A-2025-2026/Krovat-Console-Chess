@@ -20,7 +20,7 @@ public class Game {
     // Has an interpreter method that transforms chess notations into move coordinates
     // gets the next move, interprets it from the user and gives it to Board
 
-    public static void saveBoard(String filename, ArrayList<String> moves) throws FileNotFoundException {
+    public void saveGame(String filename) throws FileNotFoundException {
         PrintWriter writer = new PrintWriter(filename);
 
         int moveNumber = 1;
@@ -35,7 +35,7 @@ public class Game {
         writer.close();
     }
 
-    public static Board loadBoard(String filename) throws FileNotFoundException {
+    public Board loadGame(String filename) throws FileNotFoundException {
         Board board = new Board();
         boolean whiteToMove = true;
         char promotionChoice = 'Q';
@@ -54,8 +54,9 @@ public class Game {
             String[] tokens = line.split("\\s+");
 
             for(String token : tokens) {
+                if (token.matches("\\d+\\.")) continue;
                 moves.add(token);
-                if(token.contains(".")) continue;
+//                if(token.contains(".")) continue;
                 Coordinates[] move = interpretMove(token, whiteToMove); //turns a move into from and to coordinates
                 Coordinates from = move[0];
                 Coordinates to = move[1];
@@ -93,8 +94,9 @@ public class Game {
         }
 
         // Promotion
+        char promotion;
         if (notation.contains("=")) {
-            char promotion = notation.charAt(notation.length() - 1);
+            promotion = notation.charAt(notation.length() - 1);
             notation = notation.substring(0, notation.indexOf("="));
         }
 

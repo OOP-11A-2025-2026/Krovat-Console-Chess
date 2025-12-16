@@ -65,10 +65,16 @@ public class Board {
         this.squares = new Piece[8][8];
 
         if(squares.length != 8) throw new IllegalArgumentException("Invalid array length");
-        if(squares[0].length != 8) throw new IllegalArgumentException("Invalid array length");
+        for (Piece[] row : squares) {
+            if (row.length != 8) throw new IllegalArgumentException("Invalid array length");
+        }
+
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
-                this.squares[i][j] = squares[i][j].copy(); // Had to make a copy method to ensure deep copy
+                if (squares[i][j] != null) {
+                    this.squares[i][j] = squares[i][j].copy(); // Had to make a copy method to ensure deep copy
+                }
+                else throw new IllegalArgumentException("Invalid array element");
             }
         }
     }
@@ -122,7 +128,7 @@ public class Board {
     // Checks if the king is in check and returns true if it is, else - false
     // isKingWhite is a boolean used to tell if you are trying to see if the white or black king is in check
     public boolean checkCheck(boolean isKingWhite) {
-        boolean opponentColour = !isKingWhite;
+        boolean opponentIsWhite = !isKingWhite;
 
         // Finding the coordinates of the king piece
         Coordinates kingCoordinates = getKingCoordinates(isKingWhite);
@@ -133,7 +139,7 @@ public class Board {
             piece = squares[i][kingCoordinates.getSecond()];
             if(piece == null) continue;
 
-            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+            if(piece.isWhite() == opponentIsWhite && (piece instanceof Queen || piece instanceof Rook)) {
                 return true;
             }
             else break;
@@ -144,7 +150,7 @@ public class Board {
             piece = squares[i][kingCoordinates.getSecond()];
             if(piece == null) continue;
 
-            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+            if(piece.isWhite() == opponentIsWhite && (piece instanceof Queen || piece instanceof Rook)) {
                 return true;
             }
             else break;
@@ -155,7 +161,7 @@ public class Board {
             piece = squares[kingCoordinates.getFirst()][i];
             if(piece == null) continue;
 
-            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+            if(piece.isWhite() == opponentIsWhite && (piece instanceof Queen || piece instanceof Rook)) {
                 return true;
             }
             else break;
@@ -166,7 +172,7 @@ public class Board {
             piece = squares[kingCoordinates.getFirst()][i];
             if(piece == null) continue;
 
-            if(piece.isWhite() == opponentColour && (piece instanceof Queen || piece instanceof Rook)) {
+            if(piece.isWhite() == opponentIsWhite && (piece instanceof Queen || piece instanceof Rook)) {
                 return true;
             }
             else break;
@@ -178,7 +184,7 @@ public class Board {
             piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() + i];
             if (piece == null) continue;
 
-            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+            if (piece.isWhite() == opponentIsWhite && (piece instanceof Bishop || piece instanceof Queen)) {
                 return true;
             }
             else break;
@@ -190,7 +196,7 @@ public class Board {
             piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() - i];
             if (piece == null) continue;
 
-            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+            if (piece.isWhite() == opponentIsWhite && (piece instanceof Bishop || piece instanceof Queen)) {
                 return true;
             } else break;
         }
@@ -201,7 +207,7 @@ public class Board {
             piece = squares[kingCoordinates.getFirst() - i][kingCoordinates.getSecond() + i];
             if (piece == null) continue;
 
-            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+            if (piece.isWhite() == opponentIsWhite && (piece instanceof Bishop || piece instanceof Queen)) {
                 return true;
             }
             else break;
@@ -213,7 +219,7 @@ public class Board {
             piece = squares[kingCoordinates.getFirst() - i][kingCoordinates.getSecond() - i];
             if (piece == null) continue;
 
-            if (piece.isWhite() == opponentColour && (piece instanceof Bishop || piece instanceof Queen)) {
+            if (piece.isWhite() == opponentIsWhite && (piece instanceof Bishop || piece instanceof Queen)) {
                 return true;
             }
             else break;
@@ -227,7 +233,7 @@ public class Board {
             if (first < 0 || first >= 8 || second < 0 || second >= 8) continue;
 
             piece = squares[first][second];
-            if (piece instanceof Knight && piece.isWhite() == opponentColour) {
+            if (piece instanceof Knight && piece.isWhite() == opponentIsWhite) {
                 return true;
             }
         }
@@ -243,13 +249,13 @@ public class Board {
 
             if(leftSecond >= 0) {
                 piece = squares[first][leftSecond];
-                if(piece instanceof Pawn && piece.isWhite() == opponentColour) {
+                if(piece instanceof Pawn && piece.isWhite() == opponentIsWhite) {
                     return true;
                 }
             }
             if(rightSecond < 8) {
                 piece = squares[first][rightSecond];
-                if(piece instanceof Pawn && piece.isWhite() == opponentColour) {
+                if(piece instanceof Pawn && piece.isWhite() == opponentIsWhite) {
                     return true;
                 }
             }
@@ -707,13 +713,13 @@ public class Board {
         squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
 
-    private boolean checkPin(Coordinates from, Coordinates to) {
+    private void checkPin(Coordinates from, Coordinates to) {
 
         Piece movingPiece = getPiece(from);
         Piece capturedPiece = getPiece(to);
 
         if (movingPiece == null)
-            return false;
+            throw new IllegalArgumentException("Moving piece is null");
 
         // Make temporary move
         squares[to.getFirst()][to.getSecond()] = movingPiece;
@@ -726,10 +732,8 @@ public class Board {
         squares[to.getFirst()][to.getSecond()] = capturedPiece;
 
         if (kingInCheck) {
-            return true;
+            throw new InvalidMove("Move leaves king in check");
         }
-
-        return false;
     }
 
 
