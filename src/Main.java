@@ -1,6 +1,8 @@
 import chess.*;
 
-public static void main() {
-
+public class Main {
+    public static void main() {
+        Game game = new Game();
+    }
 }
 

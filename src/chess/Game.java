@@ -10,7 +10,6 @@ public class Game {
 
     private ArrayList<String> moves = new ArrayList<>();
 
-
     // Creates Board
     // In a loop prints Board in the console and accepts input
     // Handles draws, winners and resigns
