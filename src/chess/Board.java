@@ -90,7 +90,7 @@ public class Board {
     // I can't EVER reverse this move if my opponent plays
     public void undoMove() {
         if (!undoAvailable || undoSquares == null)
-            throw new IllegalStateException("No move to undo");
+            throw new InvalidMove("No move to undo");
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -563,13 +563,11 @@ public class Board {
         boolean opponentWhite = !moving.isWhite();
 
         if (checkMate(opponentWhite)) {
-            System.out.println("CHECKMATE!");
+//            System.out.println("CHECKMATE!");
             return 1;
         } else if (checkStalemate(opponentWhite)) {
-            System.out.println("STALEMATE!");
+//            System.out.println("STALEMATE!");
             return 2;
-        } else if (checkCheck(opponentWhite)) {
-            System.out.println("CHECK!");
         }
 
         return 0;
