@@ -13,7 +13,6 @@ The third project of team Krovat for OOP class
 3. Алгоритъм\
 State diagram:
 ![img.png](img.png)\
-\
 
 
 4. Обяснение на кода

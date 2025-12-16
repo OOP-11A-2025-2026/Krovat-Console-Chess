@@ -1,5 +1,7 @@
 package chess;
 
+import java.time.temporal.Temporal;
+
 public class Board {
     private Piece[][] squares;
 
@@ -376,7 +378,6 @@ public class Board {
 
     // castle()
     private void castle(Coordinates from, Coordinates to) {
-        if (!checkCastle(from, to)) throw new InvalidMove("Illegal castling attempt");
 
         int row = from.getFirst();
         int colDiff = to.getSecond() - from.getSecond();
@@ -706,13 +707,13 @@ public class Board {
         squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
 
-    private void checkPin(Coordinates from, Coordinates to) {
+    private boolean checkPin(Coordinates from, Coordinates to) {
 
         Piece movingPiece = getPiece(from);
         Piece capturedPiece = getPiece(to);
 
         if (movingPiece == null)
-            throw new IllegalArgumentException("No piece to move");
+            return false;
 
         // Make temporary move
         squares[to.getFirst()][to.getSecond()] = movingPiece;
@@ -725,8 +726,11 @@ public class Board {
         squares[to.getFirst()][to.getSecond()] = capturedPiece;
 
         if (kingInCheck) {
-            throw new InvalidMove("Move leaves king in check");
+            return true;
         }
+
+        return false;
     }
+
 
 }
