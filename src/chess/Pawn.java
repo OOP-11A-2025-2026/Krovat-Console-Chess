@@ -31,14 +31,15 @@ public class Pawn extends Piece {
 
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
+//        System.out.println("Pawn regular movement " + from.getFirst() + " " + from.getSecond() + " to " + to.getFirst() + " " + to.getSecond());
+
         if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
             throw new IllegalArgumentException("Invalid coordinates. The coordinates must not be the same");
 
         if(!isWithinBoard(to)) {
-            return false;
+            throw new IllegalArgumentException("Invalid coordinates. The coordinates go outside of the board");
         }
 
-    int direction = isWhite() ? -1 : 1;
     int rowDiff = Math.abs(to.getFirst() - from.getFirst());
     int colDiff = Math.abs(to.getSecond() - from.getSecond());
 
@@ -46,13 +47,13 @@ public class Pawn extends Piece {
     if (rowDiff == 0 && colDiff == 0) return false;
 
     // One square forward
-    if (colDiff == 0 && rowDiff == direction) return true;
+    if (colDiff == 0 && rowDiff == 1) return true;
 
     // Two squares forward (first move only)
-    if (!hasMoved && colDiff == 0 && rowDiff == 2 * direction) return true;
+    if (!hasMoved && colDiff == 0 && rowDiff == 2) return true;
 
     // Diagonal capture (Board confirms capture)
-    if (Math.abs(colDiff) == 1 && rowDiff == direction) return true;
+    if (colDiff == 1 && rowDiff == 1) return true;
 
     return false;
 }
