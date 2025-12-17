@@ -9,6 +9,7 @@ import java.util.Scanner;
 public class Game {
 
     private final ArrayList<String> moves = new ArrayList<>();
+    private String defaultFile = "src/example.pgn";
     private char promotionChoice = ' ';
     private Board board;
 
@@ -28,11 +29,8 @@ public class Game {
         board = new Board();
 
         if (choice.equals("2")) {
-            System.out.print("Enter filename: ");
-            String filename = scanner.nextLine().trim();
-
             try {
-                loadGame(filename);
+                loadGame(defaultFile);
                 whiteTurn = (moves.size() % 2 == 0);
                 System.out.println("Game loaded.");
             } catch (FileNotFoundException e) {

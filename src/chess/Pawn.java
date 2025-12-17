@@ -31,31 +31,29 @@ public class Pawn extends Piece {
 
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
-//        System.out.println("Pawn regular movement " + from.getFirst() + " " + from.getSecond() + " to " + to.getFirst() + " " + to.getSecond());
-
         if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
             throw new IllegalArgumentException("Invalid coordinates. The coordinates must not be the same");
 
         if(!isWithinBoard(to)) {
-            throw new IllegalArgumentException("Invalid coordinates. The coordinates go outside of the board");
+            return false;
         }
 
-    int rowDiff = Math.abs(to.getFirst() - from.getFirst());
-    int colDiff = Math.abs(to.getSecond() - from.getSecond());
+        int direction = isWhite() ? -1 : 1;
+        int rowDiff = Math.abs(to.getFirst() - from.getFirst());
+        int colDiff = Math.abs(to.getSecond() - from.getSecond());
 
-    // Same square
-    if (rowDiff == 0 && colDiff == 0) return false;
+        // Same square
+        if (rowDiff == 0 && colDiff == 0) return false;
 
-    // One square forward
-    if (colDiff == 0 && rowDiff == 1) return true;
+        // One square forward
+        if (colDiff == 0 && rowDiff == direction) return true;
 
-    // Two squares forward (first move only)
-    if (!hasMoved && colDiff == 0 && rowDiff == 2) return true;
+        // Two squares forward (first move only)
+        if (!hasMoved && colDiff == 0 && rowDiff == 2 * direction) return true;
 
-    // Diagonal capture (Board confirms capture)
-    if (colDiff == 1 && rowDiff == 1) return true;
+        // Diagonal capture (Board confirms capture)
+        if (Math.abs(colDiff) == 1 && rowDiff == direction) return true;
 
-    return false;
-}
-
+        return false;
+    }
 }

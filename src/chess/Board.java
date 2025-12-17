@@ -600,7 +600,8 @@ public class Board {
             for (int j = 0; j < 8; j++) {
                 Piece piece = squares[i][j];
                 if (piece == null) {
-                    sb.append(". ");
+                    if(i % 2 == j % 2) sb.append("* ");
+                    else sb.append(". ");
                 }
                 else {
                     sb.append(piece.getSymbol()).append(" ");
