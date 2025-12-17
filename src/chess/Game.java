@@ -9,9 +9,9 @@ import java.util.Scanner;
 public class Game {
 
     private final ArrayList<String> moves = new ArrayList<>();
-    private String defaultFile = "../src/example.pgn";
     private char promotionChoice = ' ';
     private Board board;
+    private String gameResult = "*";
 
     // =========================
     // GAME START
@@ -55,6 +55,12 @@ public class Game {
         while (true) {
 
             System.out.println(board);
+
+            if (!gameResult.equals("*")) {
+                System.out.println("This game is already finished: " + gameResult);
+                break;
+            }
+
             System.out.println((whiteTurn ? "White" : "Black") + "'s turn");
             System.out.println("Options: [1] Move  [2] Save  [3] Offer Draw  [4] Resign");
             System.out.print("Choice: ");
@@ -186,20 +192,15 @@ public class Game {
 
                 if (token.matches("\\d+\\.")) continue;
                 if (token.matches("\\d+\\.\\.\\.")) continue;
-                if (token.equals("1-0") || token.equals("0-1") || token.equals("1/2-1/2")) {
-                    String[] outcomes = token.split("-");
-                    String whiteOutcome = outcomes[0];
-                    String blackOutcome = outcomes[1];
-                    if (whiteOutcome.equals("1"))
-                        System.out.println("White wins!");
-                    else if (blackOutcome.equals("1"))
-                        System.out.println("Black wins!");
-                    else if (whiteOutcome.equals("1/2") && blackOutcome.equals("1/2"))
-                        System.out.println("Draw!");
-                    else System.out.println("Invalid outcome!");
+                if (token.matches("1-0|0-1|1/2-1/2")) {
+                    switch (token) {
+                        case "1-0" -> gameResult = "White wins!";
+                        case "0-1" -> gameResult = "Black wins!";
+                        case "1/2-1/2" -> gameResult = "Draw!";
+                        default -> System.out.println("Invalid outcome!");
+                    }
                     return;
                 }
-
                 if (token.isEmpty()) continue;
 
                 moves.add(token);
