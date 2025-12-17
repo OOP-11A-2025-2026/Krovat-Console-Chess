@@ -613,7 +613,7 @@ public class Board {
     }
 
     // Helper method to retrieve a piece using the Coordinates object
-    private Piece getPiece(Coordinates coords) {
+    Piece getPiece(Coordinates coords) {
         if (coords == null) return null;
         return squares[coords.getFirst()][coords.getSecond()];
     }
@@ -701,14 +701,13 @@ public class Board {
         }
 
         boolean isWhite = pawn.isWhite();
-        Piece newPiece;
-
-        switch (Character.toUpperCase(promotionChoice)) {
-            case 'R': newPiece = new Rook(isWhite); break;
-            case 'B': newPiece = new Bishop(isWhite); break;
-            case 'N': newPiece = new Knight(isWhite); break;
-            default: newPiece = new Queen(isWhite);
-        }
+        Piece newPiece =
+                switch (Character.toUpperCase(promotionChoice)) {
+            case 'R' -> new Rook(isWhite);
+            case 'B' -> new Bishop(isWhite);
+            case 'N' -> new Knight(isWhite);
+            default -> new Queen(isWhite);
+        };
 
         squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
@@ -736,5 +735,15 @@ public class Board {
         }
     }
 
-
+    public boolean isLegalMove(Coordinates from, Coordinates to, boolean whiteTurn, char promotionChoice) {
+        saveUndoState();
+        try {
+            makeMove(from, to, whiteTurn, promotionChoice);
+            return true;
+        } catch (InvalidMove e) {
+            return false;
+        } finally {
+            undoMove();
+        }
+    }
 }
