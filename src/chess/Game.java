@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Game {
 
     private final ArrayList<String> moves = new ArrayList<>();
-    private String defaultFile = "src/example.pgn";
+    private String defaultFile = "../src/example.pgn";
     private char promotionChoice = ' ';
     private Board board;
 
@@ -29,8 +29,14 @@ public class Game {
         board = new Board();
 
         if (choice.equals("2")) {
+            System.out.print("Enter PGN filename to load: ");
+            String filename = scanner.nextLine().trim();
+            if (filename.isEmpty()) {
+                System.out.println("No filename provided.");
+                return;
+            }
             try {
-                loadGame(defaultFile);
+                loadGame(filename);
                 whiteTurn = (moves.size() % 2 == 0);
                 System.out.println("Game loaded.");
             } catch (FileNotFoundException e) {
@@ -49,35 +55,51 @@ public class Game {
         while (true) {
 
             System.out.println(board);
-            System.out.print((whiteTurn ? "White" : "Black") + " to move: ");
+            System.out.println((whiteTurn ? "White" : "Black") + "'s turn");
+            System.out.println("Options: [1] Move  [2] Save  [3] Offer Draw  [4] Resign");
+            System.out.print("Choice: ");
 
             String input = scanner.nextLine().trim();
 
             // ---- SAVE ----
-            if (input.startsWith("save")) {
-                String[] parts = input.split("\\s+");
-                if (parts.length != 2) {
-                    System.out.println("Usage: save filename.pgn");
-                    continue;
+            if (input.equals("2")) {
+                System.out.print("Enter filename (e.g. game.pgn): ");
+                String filename = scanner.nextLine().trim();
+                if (filename.isEmpty()) {
+                    filename = "game.pgn";
                 }
                 try {
-                    saveGame(parts[1]);
+                    saveGame(filename);
                 } catch (FileNotFoundException e) {
                     System.out.println("Save failed: " + e.getMessage());
                 }
                 continue;
             }
 
+            // ---- DRAW ----
+            if (input.equals("3")) {
+                System.out.print("Opponent, do you accept the draw? (y/n): ");
+                String response = scanner.nextLine().trim();
+                if (response.equalsIgnoreCase("y")) {
+                    System.out.println("Game drawn by agreement.");
+                    break;
+                } else {
+                    System.out.println("Draw declined. Game continues.");
+                    continue;
+                }
+            }
+
             // ---- RESIGN ----
-            if (input.equalsIgnoreCase("resign")) {
-                System.out.println((whiteTurn ? "Black" : "White") + " wins by resignation.");
+            if (input.equals("4")) {
+                System.out.println((whiteTurn ? "White" : "Black") + " resigns.");
+                System.out.println((whiteTurn ? "Black" : "White") + " wins!");
                 break;
             }
 
-            // ---- DRAW ----
-            if (input.equalsIgnoreCase("draw")) {
-                System.out.println("Game drawn by agreement.");
-                break;
+            // ---- MOVE ----
+            if (input.equals("1")) {
+                System.out.print("Enter move (e.g. e4, Nf3, O-O): ");
+                input = scanner.nextLine().trim();
             }
 
             try {
@@ -140,6 +162,12 @@ public class Game {
         boolean whiteToMove = true;
 
         File file = new File(filename);
+        if (!file.exists()) {
+            file = new File("src/" + filename);
+        }
+        if (!file.exists()) {
+            file = new File("../src/" + filename);
+        }
         if (!file.exists()) throw new FileNotFoundException("File doesn't exist!");
         if (file.length() == 0) throw new FileNotFoundException("File is empty!");
 
@@ -157,6 +185,22 @@ public class Game {
             for (String token : tokens) {
 
                 if (token.matches("\\d+\\.")) continue;
+                if (token.matches("\\d+\\.\\.\\.")) continue;
+                if (token.equals("1-0") || token.equals("0-1") || token.equals("1/2-1/2")) {
+                    String[] outcomes = token.split("-");
+                    String whiteOutcome = outcomes[0];
+                    String blackOutcome = outcomes[1];
+                    if (whiteOutcome.equals("1"))
+                        System.out.println("White wins!");
+                    else if (blackOutcome.equals("1"))
+                        System.out.println("Black wins!");
+                    else if (whiteOutcome.equals("1/2") && blackOutcome.equals("1/2"))
+                        System.out.println("Draw!");
+                    else System.out.println("Invalid outcome!");
+                    return;
+                }
+
+                if (token.isEmpty()) continue;
 
                 moves.add(token);
 
@@ -164,7 +208,6 @@ public class Game {
                 board.makeMove(move[0], move[1], whiteToMove, promotionChoice);
                 promotionChoice = ' ';
                 whiteToMove = !whiteToMove;
-                System.out.println(board.toString());
             }
         }
 
@@ -253,7 +296,7 @@ public class Game {
             throw new InvalidMove("Ambiguous SAN: " + notation);
         }
 
-        return new Coordinates[] { candidates.getFirst(), to };
+        return new Coordinates[] { candidates.get(0), to };
     }
 
     // =========================
