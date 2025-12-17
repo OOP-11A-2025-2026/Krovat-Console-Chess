@@ -55,8 +55,7 @@ public class Game {
             for(String token : tokens) {
                 if (token.matches("\\d+\\.")) continue;
                 moves.add(token);
-//                if(token.contains(".")) continue;
-                Coordinates[] move = interpretMove(token, whiteToMove); //turns a move into from and to coordinates
+                Coordinates[] move = interpretMove(token, whiteToMove, board, promotionChoice); //turns a move into from and to coordinates
                 Coordinates from = move[0];
                 Coordinates to = move[1];
                 board.makeMove(from, to, whiteToMove, promotionChoice);
@@ -76,7 +75,7 @@ public class Game {
                 .replace("#", "");
 
         // Castling
-        if (notation.equals("O-O")) {
+        if (notation.equals("O-O") || notation.equals("0-0")) {
             int row = whiteTurn ? 7 : 0;
             return new Coordinates[]{
                     new Coordinates(row, 4),
@@ -84,7 +83,7 @@ public class Game {
             };
         }
 
-        if (notation.equals("O-O-O")) {
+        if (notation.equals("O-O-O") || notation.equals("0-0-0")) {
             int row = whiteTurn ? 7 : 0;
             return new Coordinates[]{
                     new Coordinates(row, 4),
