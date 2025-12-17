@@ -196,14 +196,19 @@ public class Game {
         }
 
         // Capture
+        boolean isCapture = notation.contains("x");
         notation = notation.replace("x", "");
 
         char file = notation.charAt(notation.length() - 2);
         char rank = notation.charAt(notation.length() - 1);
         Coordinates to = parseSquare(file, rank);
 
-        char pieceChar = Character.isUpperCase(notation.charAt(0)) ? notation.charAt(0) : 'P';
+        // Find piece type
+        char pieceChar = Character.isUpperCase(notation.charAt(0))
+                ? notation.charAt(0)
+                : 'P';
 
+        // Disambiguation
         Character disFile = null;
         Character disRank = null;
 
@@ -213,13 +218,20 @@ public class Game {
             else disFile = d;
         }
 
+        // Pawn capture disambiguation (exd5)
+        if (pieceChar == 'P' && isCapture) {
+            disFile = notation.charAt(0);
+        }
+
+        ArrayList<Coordinates> candidates = new ArrayList<>();
+
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-
                 Coordinates from = new Coordinates(i, j);
                 Piece p = board.getPiece(from);
 
-                if (p == null || p.isWhite() != whiteTurn) continue;
+                if (p == null) continue;
+                if (p.isWhite() != whiteTurn) continue;
                 if (!matchesPiece(p, pieceChar)) continue;
 
                 if (disFile != null && j != disFile - 'a') continue;
@@ -228,12 +240,20 @@ public class Game {
                 char promotion = promotionChoice == ' ' ? 'Q' : promotionChoice;
 
                 if (board.isLegalMove(from, to, whiteTurn, promotion)) {
-                    return new Coordinates[]{ from, to };
+                    candidates.add(from);
                 }
             }
         }
 
-        throw new InvalidMove("No legal move for notation: " + notation);
+        if (candidates.isEmpty()) {
+            throw new InvalidMove("No legal move found for notation: " + notation);
+        }
+
+        if (candidates.size() > 1) {
+            throw new InvalidMove("Ambiguous SAN: " + notation);
+        }
+
+        return new Coordinates[] { candidates.getFirst(), to };
     }
 
     // =========================

@@ -38,7 +38,6 @@ public class Pawn extends Piece {
             return false;
         }
 
-        int direction = isWhite() ? -1 : 1;
         int rowDiff = Math.abs(to.getFirst() - from.getFirst());
         int colDiff = Math.abs(to.getSecond() - from.getSecond());
 
@@ -46,13 +45,13 @@ public class Pawn extends Piece {
         if (rowDiff == 0 && colDiff == 0) return false;
 
         // One square forward
-        if (colDiff == 0 && rowDiff == direction) return true;
+        if (colDiff == 0 && rowDiff == 1) return true;
 
         // Two squares forward (first move only)
-        if (!hasMoved && colDiff == 0 && rowDiff == 2 * direction) return true;
+        if (!hasMoved && colDiff == 0 && rowDiff == 2) return true;
 
         // Diagonal capture (Board confirms capture)
-        if (Math.abs(colDiff) == 1 && rowDiff == direction) return true;
+        if (Math.abs(colDiff) == 1 && rowDiff == 1) return true;
 
         return false;
     }
