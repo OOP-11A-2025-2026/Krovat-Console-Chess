@@ -164,6 +164,7 @@ public class Game {
                 board.makeMove(move[0], move[1], whiteToMove, promotionChoice);
                 promotionChoice = ' ';
                 whiteToMove = !whiteToMove;
+                System.out.println(board.toString());
             }
         }
 

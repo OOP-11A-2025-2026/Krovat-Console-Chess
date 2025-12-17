@@ -293,6 +293,9 @@ public class Board {
                 Coordinates from = new Coordinates(fromFst, fromSnd);
                 for(int toFst = 0; toFst < 8; toFst++) {
                     for(int toSnd = 0; toSnd < 8; toSnd++) {
+                        if(fromFst == toFst && fromSnd == toSnd)
+                            continue;
+
                         Coordinates to = new Coordinates(toFst, toSnd);
 
                         if(!p.regularMovement(from, to))
@@ -532,6 +535,16 @@ public class Board {
         if (!moving.regularMovement(from, to))
             throw new InvalidMove("Illegal movement");
 
+        if (moving instanceof Pawn) {
+            int colDiff = Math.abs(to.getSecond() - from.getSecond());
+            if (colDiff == 1 && target == null) {
+                throw new InvalidMove("Pawn diagonal move requires capture");
+            }
+            if (colDiff == 0 && target != null) {
+                throw new InvalidMove("Pawn cannot capture forward");
+            }
+        }
+
         if (!(moving instanceof Knight) && checkCollision(from, to))
             throw new InvalidMove("Path blocked");
 
@@ -642,7 +655,7 @@ public class Board {
 
         // Diagonal move
         if (to.getFirst() - from.getFirst() != direction ||
-            Math.abs(to.getSecond() - from.getSecond()) != 1)
+                Math.abs(to.getSecond() - from.getSecond()) != 1)
             return false;
 
         // Target square must be empty
@@ -698,18 +711,18 @@ public class Board {
 
         // Promotion check
         if ((pawn.isWhite() && coords.getFirst() != 0) ||
-            (!pawn.isWhite() && coords.getFirst() != 7)) {
+                (!pawn.isWhite() && coords.getFirst() != 7)) {
             return;
         }
 
         boolean isWhite = pawn.isWhite();
         Piece newPiece =
                 switch (Character.toUpperCase(promotionChoice)) {
-            case 'R' -> new Rook(isWhite);
-            case 'B' -> new Bishop(isWhite);
-            case 'N' -> new Knight(isWhite);
-            default -> new Queen(isWhite);
-        };
+                    case 'R' -> new Rook(isWhite);
+                    case 'B' -> new Bishop(isWhite);
+                    case 'N' -> new Knight(isWhite);
+                    default -> new Queen(isWhite);
+                };
 
         squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
@@ -744,7 +757,6 @@ public class Board {
             undoMove();
             return true;
         } catch (InvalidMove e) {
-            System.out.println(e.getMessage());
             if (undoAvailable) undoMove();
             return false;
         }

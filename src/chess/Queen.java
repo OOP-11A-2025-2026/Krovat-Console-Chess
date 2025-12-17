@@ -3,8 +3,7 @@ package chess;
 public class Queen extends Piece {
 
     public Queen(boolean isWhite) {
-        char letter = isWhite ? 'Q' : 'q';
-        super(isWhite, letter);
+        super(isWhite, isWhite ? 'Q' : 'q');
     }
 
     public Queen(Queen other) {

@@ -3,8 +3,7 @@ package chess;
 public class Knight extends Piece {
 
     public Knight(boolean isWhite) {
-        char letter = isWhite ? 'N' : 'n';
-        super(isWhite, letter);
+        super(isWhite, isWhite ? 'N' : 'n');
     }
 
     // Copy constructor

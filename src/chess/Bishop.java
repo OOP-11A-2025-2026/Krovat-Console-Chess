@@ -3,8 +3,7 @@ package chess;
 public class Bishop extends Piece {
 
     public Bishop(boolean isWhite) {
-        char letter = isWhite ? 'B' : 'b';
-        super(isWhite, letter);
+        super(isWhite, isWhite ? 'B' : 'b');
     }
 
     public Bishop(Bishop other) {

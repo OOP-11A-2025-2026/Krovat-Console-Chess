@@ -4,8 +4,7 @@ public class King extends Piece {
     private boolean hasMoved;
 
     public King(boolean isWhite) {
-        char letter = isWhite ? 'K' : 'k';
-        super(isWhite, letter);
+        super(isWhite, isWhite ? 'K' : 'k');
     }
 
     // Copy constructor
