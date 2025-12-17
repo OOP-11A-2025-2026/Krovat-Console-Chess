@@ -239,7 +239,7 @@ public class Board {
         }
 
         // Pawn check
-        int opponentPawnDirection = isKingWhite ? -1 : 1;
+        int opponentPawnDirection = isKingWhite ? 1 : -1;
 
         int first = kingCoordinates.getFirst() + opponentPawnDirection;
 
