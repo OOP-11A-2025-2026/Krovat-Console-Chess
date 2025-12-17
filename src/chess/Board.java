@@ -591,10 +591,11 @@ public class Board {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("  a b c d e f g h"); // file labels
+        sb.append("  | a b c d e f g h\n"); // file labels
+        sb.append("--+----------------\n");
 
         for (int i = 0; i < 8; i++) {
-            sb.append(8 - i).append(" "); // rank labels
+            sb.append(8 - i).append(" | "); // rank labels
 
             for (int j = 0; j < 8; j++) {
                 Piece piece = squares[i][j];
@@ -736,14 +737,15 @@ public class Board {
     }
 
     public boolean isLegalMove(Coordinates from, Coordinates to, boolean whiteTurn, char promotionChoice) {
-        saveUndoState();
         try {
+            saveUndoState();
             makeMove(from, to, whiteTurn, promotionChoice);
+            undoMove();
             return true;
         } catch (InvalidMove e) {
+            System.out.println(e.getMessage());
+            if (undoAvailable) undoMove();
             return false;
-        } finally {
-            undoMove();
         }
     }
 }
