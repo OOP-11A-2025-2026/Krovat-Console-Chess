@@ -45,7 +45,7 @@ State diagram:
 
 
 ### 5. Екип. Разпределение на работата
-- Иванета - Board instructions, constructors, toString, getKingCoordinates, checkCheck, checkCollision, saveUndoState, undoMove and makeMove methods, Piece, Coordinates, Queen, copy method and copy constructors in all pieces, InvalidMove, README
-- Виктор - Knight, King, checkMate, checkStalemate, hasValidMoves, README, presentation
-- Самуил - Pawn, promotion, checkEnPassant, enPassant, getPiece, resetAllEnPassantEligibility, checkPin
-- Игнат - Rook, Bishop, checkCastle, castle
+- Иванета - Board instructions, constructors, toString, getKingCoordinates, checkCheck, checkCollision, saveUndoState, undoMove, makeMove and isLegalMove methods, Piece, Coordinates, Queen, copy method and copy constructors in all pieces, InvalidMove, README, Game interpretMove
+- Виктор - Knight, King, Board checkMate, checkStalemate and hasValidMoves, README, presentation
+- Самуил - Pawn, Board promotion, checkEnPassant, enPassant, getPiece, resetAllEnPassantEligibility and checkPin, Game interpretMove (first version)
+- Игнат - Rook, Bishop, Board checkCastle and castle
