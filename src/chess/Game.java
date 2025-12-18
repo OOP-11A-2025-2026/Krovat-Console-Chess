@@ -62,13 +62,13 @@ public class Game {
             }
 
             System.out.println((whiteTurn ? "White" : "Black") + "'s turn");
-            System.out.println("Options: [1] Move  [2] Save  [3] Offer Draw  [4] Resign");
+            System.out.println("Options: [1] Move [2] Undo last move  [3] Save  [4] Offer Draw  [5] Resign");
             System.out.print("Choice: ");
 
             String input = scanner.nextLine().trim();
 
             // ---- SAVE ----
-            if (input.equals("2")) {
+            if (input.equals("3")) {
                 System.out.print("Enter filename (e.g. game.pgn): ");
                 String filename = scanner.nextLine().trim();
                 if (filename.isEmpty()) {
@@ -83,7 +83,7 @@ public class Game {
             }
 
             // ---- DRAW ----
-            if (input.equals("3")) {
+            if (input.equals("4")) {
                 System.out.print("Opponent, do you accept the draw? (y/n): ");
                 String response = scanner.nextLine().trim();
                 if (response.equalsIgnoreCase("y")) {
@@ -96,7 +96,7 @@ public class Game {
             }
 
             // ---- RESIGN ----
-            if (input.equals("4")) {
+            if (input.equals("5")) {
                 System.out.println((whiteTurn ? "White" : "Black") + " resigns.");
                 System.out.println((whiteTurn ? "Black" : "White") + " wins!");
                 break;
@@ -106,6 +106,13 @@ public class Game {
             if (input.equals("1")) {
                 System.out.print("Enter move (e.g. e4, Nf3, O-O): ");
                 input = scanner.nextLine().trim();
+            }
+
+            // ---- UNDO ----
+            if(input.equals("2")) {
+                board.undoMove();
+                whiteTurn = !whiteTurn;
+                continue;
             }
 
             try {
