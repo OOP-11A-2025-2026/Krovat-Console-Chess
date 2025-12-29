@@ -192,6 +192,7 @@ public class Game {
             if (line.isEmpty()) continue;
             if (line.startsWith("[")) continue;
 
+            line = line.replaceAll("(\\d+)\\.", "$1. ");
             line = line.replaceAll("\\{.*?}", "");
             String[] tokens = line.split("\\s+");
 
