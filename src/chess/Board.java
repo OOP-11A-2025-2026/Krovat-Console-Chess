@@ -306,6 +306,16 @@ public class Board {
                         if(target != null && target.isWhite() == isKingWhite)
                             continue;
 
+                        if (p instanceof Pawn) {
+                            int colDiff = Math.abs(toSnd - fromSnd);
+
+                            if (colDiff == 1 && target == null)
+                                continue;
+
+                            if (colDiff == 0 && target != null)
+                                continue;
+                        }
+
                         if(!(p instanceof Knight) && checkCollision(from, to))
                             continue;
 
