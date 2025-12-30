@@ -16,6 +16,7 @@ abstract public class Piece {
         this.symbol = other.symbol;
     }
 
+    // Checks whether the move puts the piece outside the board (not allowed)
     public boolean isWithinBoard(Coordinates pos) {
         return (pos.getFirst() >= 0 && pos.getFirst() <= 7) && (pos.getSecond() >= 0 && pos.getSecond() <= 7);
     }

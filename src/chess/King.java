@@ -3,12 +3,13 @@ package chess;
 public class King extends Piece {
     private boolean hasMoved;
 
+    // King constructors
     public King(boolean isWhite) {
         super(isWhite, isWhite ? 'K' : 'k');
     }
 
     // Copy constructor
-    // If you have any mutable fields add them to it
+    // If you have any mutable fields, add them to it
     public King(King other) {
         super(other);
     }
@@ -18,6 +19,7 @@ public class King extends Piece {
         return new King(this);
     }
 
+    // King movement - 1 square in all 8 directions (if the board allows it)
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
         if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())

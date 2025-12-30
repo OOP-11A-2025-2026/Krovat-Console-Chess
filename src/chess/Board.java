@@ -23,7 +23,7 @@ public class Board {
     // There are probably things I missed or got wrong so proceed with caution
     // Do your best and good luck! - Iveto :)
 
-    //default constructor - new game
+    // Default constructor - new game
     // The board has to be set up with the beginning positions of the pieces:
     // Rooks in the corners, Knights next to the rooks etc.
     // Above is black in lowercase letters, below is white in uppercase letters
@@ -57,7 +57,7 @@ public class Board {
         squares[7][4] = new King(true);
     }
 
-    //load constructor - load game
+    // Load constructor - load game
     // This constructor accepts a Piece[8][8] array and COPIES its elements in squares
     // Make sure it is a deep copy and not a shallow one
     // Do not forget input validation
@@ -91,7 +91,7 @@ public class Board {
         undoAvailable = true;
     }
 
-    //has undoMove, can't stack undo's
+    // has undoMove, can't stack undo's
     // Reverse the last played move
     // For example if I am black and play a move that is accepted and the board is updated
     // I can reverse this move or my opponent can play
@@ -282,6 +282,11 @@ public class Board {
         return false;
     }
 
+
+    // hasValidMoves()
+    // Helper method for checking Mate & Stalemate
+    // Checks if there are any valid moves for any player (returns true if there's at least one valid move, else returns false)
+    // isKingWhite is a boolean used to tell if you are trying to see if the white or black king is in check (follows the same logic as the rest of the code)
     public boolean hasValidMoves(boolean isKingWhite) {
         for(int fromFst = 0; fromFst < 8; fromFst++) {
             for(int fromSnd = 0; fromSnd < 8; fromSnd++) {
@@ -335,16 +340,23 @@ public class Board {
         return false;
     }
 
+
+    // checkMate()
+    // Checks if the king has been checkmated, returns true if there is a checkmate and false if there isn't one
+    // isKingWhite is a boolean used to tell if you are trying to see if the white or black king is in check (follows the same logic as the rest of the code)
     public boolean checkMate(boolean isKingWhite) {
         return (!hasValidMoves(isKingWhite)) && (checkCheck(isKingWhite));
     }
 
+    // checkStalemate()
+    // Check if the king is in stalemate, returns true if there is a stalemate and false if there isn't one
+    // isKingWhite is a boolean used to tell if you are trying to see if the white or black king is in check (follows the same logic as the rest of the code)
     public boolean checkStalemate(boolean isKingWhite) {
         return (!hasValidMoves(isKingWhite)) && (!checkCheck(isKingWhite));
     }
 
     // checkCastle()
-    // Checks if it is a king move
+    // Checks if the given move is a king's move
     // Checks if the king is moving 2 squares to the left or right
     // ---------------- If any check after this line fails than throw an InvalidMove error
     // Checks that there are no pieces between the king and rook
@@ -354,13 +366,6 @@ public class Board {
     // Checks that the king isn't going through squares that are attacked by enemy pieces
     // Checks that the king doesn't end up on a square attacked by enemy piece
     // If all checks pass return true. If one of the checks above the line fails return false
-
-    // castle()
-    // Moves the king and rook to the right places
-    // Careful! The king can castle both right and left side and there are slight differences
-    // call only AFTER checkCastle()
-
-    // checkCastle()
     private boolean checkCastle(Coordinates from, Coordinates to) {
         Piece king = getPiece(from);
         if (!(king instanceof King)) return false;
@@ -396,6 +401,9 @@ public class Board {
     }
 
     // castle()
+    // Moves the king and rook to the right places
+    // Careful! The king can castle both right and left side and there are slight differences
+    // call only AFTER checkCastle()
     private void castle(Coordinates from, Coordinates to) {
 
         int row = from.getFirst();
@@ -411,39 +419,6 @@ public class Board {
         ((King) king).setHasMoved(true);
         ((Rook) rook).setHasMoved(true);
     }
-
-    // checkEnPassant()
-    // Checks that it is a pawn move
-    // Checks that the pawn (pawn1) is next to another pawn (pawn2)
-    // Checks that pawn1 is trying to go to the square below pawn2
-    // ---------------- If any check after this line fails than throw an InvalidMove error
-    // Checks that LAST move pawn2 moved 2 squares up
-    // If all checks pass return true. If one of the checks above the line fails return false
-
-    // EnPassant()
-    // Moves the pawn and removes the captured enemy pawn
-    // call only AFTER checkEnPassant()
-
-    // checkPin()
-    // Checks if after a piece moves if the king will be in check
-    // Should probably not actually change the board
-    // You can use checkCheck() to make it easier maybe?
-    // If after the move the king will be in check throw InvalidMove
-
-    // promotion()
-    // Checks if it is a pawn move
-    // Checks if the pawn reached the end of the board
-    // Gets input form somewhere that tells it what to promote the pawn to
-    // Replaces the pawn with the new piece
-
-    // checkMate()
-    // Checks if the king is checkmated
-    // You can use checkCheck() and/or checkStalemate() to make it easier maybe?
-    // Returns true if he is, else false
-
-    // checkStalemate()
-    // Checks if the king is stalemated
-    // Returns true if he is, else false
 
     // checkCollision()
     // This function checks if there are any pieces between 2 sets of coordinates
@@ -496,8 +471,9 @@ public class Board {
         return false;
     }
 
-    //gets info from game for the next move - what piece and where is it moving
-    //every odd turn is White, every even turn is Black
+    // makeMove()
+    // gets info from game for the next move - what piece and where it's moving
+    // every odd turn is White, every even turn is Black
     // This function handles move validation and updating the board:
     // calls checkCastle() and depending on the result calls castle()
     // If castle() is called the function should end in some way
@@ -593,10 +569,8 @@ public class Board {
         boolean opponentWhite = !moving.isWhite();
 
         if (checkMate(opponentWhite)) {
-//            System.out.println("CHECKMATE!");
             return 1;
         } else if (checkStalemate(opponentWhite)) {
-//            System.out.println("STALEMATE!");
             return 2;
         }
 
@@ -605,11 +579,10 @@ public class Board {
 
 
     // toString method
-    // Returns a string that is going to get printed on the console
+    // Returns a string for the program to print in the console
     // Uppercase letters are for white
     // Lowercase letters are for black
     // Letters: N (Knight), Q, R, P, B, K (King)
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -655,6 +628,13 @@ public class Board {
         }
     }
 
+    // checkEnPassant()
+    // Checks that it is a pawn move
+    // Checks that the pawn (pawn1) is next to another pawn (pawn2)
+    // Checks that pawn1 is trying to go to the square below pawn2
+    // ---------------- If any check after this line fails than throw an InvalidMove error
+    // Checks that LAST move pawn2 moved 2 squares up
+    // If all checks pass return true. If one of the checks above the line fails return false
     private boolean checkEnPassant(Coordinates from, Coordinates to) {
 
         Piece moving = getPiece(from);
@@ -687,6 +667,9 @@ public class Board {
         return true;
     }
 
+    // EnPassant()
+    // Moves the pawn and removes the captured enemy pawn
+    // call only AFTER checkEnPassant()
     private void enPassant(Coordinates from, Coordinates to) {
 
         Pawn pawn = (Pawn) getPiece(from);
@@ -703,6 +686,11 @@ public class Board {
         //resetAllEnPassantEligibility();
     }
 
+    // promotion()
+    // Checks if it is a pawn move
+    // Checks if the pawn reached the end of the board
+    // Gets input form somewhere that tells it what to promote the pawn to
+    // Replaces the pawn with the new piece
     private void promotion(Coordinates coords, char promotionChoice) {
 
         Piece piece = getPiece(coords);
@@ -737,6 +725,11 @@ public class Board {
         squares[coords.getFirst()][coords.getSecond()] = newPiece;
     }
 
+    // checkPin()
+    // Checks if after a piece moves if the king will be in check
+    // Should probably not actually change the board
+    // You can use checkCheck() to make it easier maybe?
+    // If after the move the king will be in check throw InvalidMove
     private void checkPin(Coordinates from, Coordinates to) {
 
         Piece movingPiece = getPiece(from);
@@ -760,10 +753,13 @@ public class Board {
         }
     }
 
-    public boolean isLegalMove(Coordinates from, Coordinates to, boolean whiteTurn, char promotionChoice) {
+    // isLegalMove()
+    // Comments?
+    //
+    public boolean isLegalMove(Coordinates from, Coordinates to, boolean isWhiteTurn, char promotionChoice) {
         try {
             saveUndoState();
-            makeMove(from, to, whiteTurn, promotionChoice);
+            makeMove(from, to, isWhiteTurn, promotionChoice);
             undoMove();
             return true;
         } catch (InvalidMove e) {

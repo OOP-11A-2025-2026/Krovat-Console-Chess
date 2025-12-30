@@ -2,6 +2,7 @@ package chess;
 
 public class Knight extends Piece {
 
+    // Knight constructors
     public Knight(boolean isWhite) {
         super(isWhite, isWhite ? 'N' : 'n');
     }
@@ -17,6 +18,7 @@ public class Knight extends Piece {
         return new Knight(this);
     }
 
+    // Knight movement - L-shaped (if the board allows it)
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
         if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
