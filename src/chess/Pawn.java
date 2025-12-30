@@ -1,8 +1,11 @@
 package chess;
 
+// Pawn piece implementation.
+// Handles pawn movement rules, en passant eligibility and promotion state.
+
 public class Pawn extends Piece {
-    private boolean hasMoved;
-    private boolean enPassantEligible;
+    private boolean hasMoved; // Indicates whether the pawn has already moved
+    private boolean enPassantEligible; // Indicates if the pawn can be captured via en passant, valid only for the opponent's next move
 
     public Pawn(boolean isWhite) {
         char letter = isWhite ? 'P' : 'p';
@@ -29,6 +32,10 @@ public class Pawn extends Piece {
     public boolean isEnPassantEligible() { return enPassantEligible; }
     public void setEnPassantEligible(boolean enPassantEligible) { this.enPassantEligible = enPassantEligible; }
 
+
+
+    // Validates pawn movement according to chess rules
+// Board handles collisions, captures and special pawn moves
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
         if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
@@ -38,6 +45,7 @@ public class Pawn extends Piece {
             return false;
         }
 
+        // Determine movement direction based on color White up (-1), Black down (+1)
         int direction = isWhite() ? -1 : 1;
 
         int rowDiff = to.getFirst() - from.getFirst();

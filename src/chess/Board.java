@@ -1,7 +1,5 @@
 package chess;
 
-import java.time.temporal.Temporal;
-
 public class Board {
     private Piece[][] squares;
 
@@ -638,7 +636,7 @@ public class Board {
     private boolean checkEnPassant(Coordinates from, Coordinates to) {
 
         Piece moving = getPiece(from);
-        if (!(moving instanceof Pawn)) return false;
+        if (!(moving instanceof Pawn)) return false; // The moving piece must be a pawn
 
         Pawn pawn = (Pawn) moving;
         int direction = pawn.isWhite() ? -1 : 1;
@@ -694,7 +692,7 @@ public class Board {
     private void promotion(Coordinates coords, char promotionChoice) {
 
         Piece piece = getPiece(coords);
-        if (!(piece instanceof Pawn)) return;
+        if (!(piece instanceof Pawn)) return; // Promotion applies only to pawns
 
         Pawn pawn = (Pawn) piece;
         pawn.setHasMoved(true);
@@ -713,6 +711,8 @@ public class Board {
             return;
         }
 
+
+        // Replace pawn with the selected promoted piece
         boolean isWhite = pawn.isWhite();
         Piece newPiece =
                 switch (Character.toUpperCase(promotionChoice)) {
