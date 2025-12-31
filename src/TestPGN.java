@@ -70,7 +70,7 @@ public class TestPGN {
     }
 
 
-     // Splits a PGN file containing multiple games into individual game PGNs.
+     // Splits a String PGN file containing multiple games into individual String game PGNs.
      // Metadata is preserved (Game.loadGame later ignores it)
      private static List<String> splitIntoGames(String pgn) {
         List<String> games = new ArrayList<>();

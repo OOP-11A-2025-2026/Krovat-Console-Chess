@@ -32,10 +32,8 @@ public class Pawn extends Piece {
     public boolean isEnPassantEligible() { return enPassantEligible; }
     public void setEnPassantEligible(boolean enPassantEligible) { this.enPassantEligible = enPassantEligible; }
 
-
-
     // Validates pawn movement according to chess rules
-// Board handles collisions, captures and special pawn moves
+    // Board handles collisions, captures and special pawn moves
     @Override
     public boolean regularMovement(Coordinates from, Coordinates to) {
         if(from.getFirst() == to.getFirst() && from.getSecond() == to.getSecond())
