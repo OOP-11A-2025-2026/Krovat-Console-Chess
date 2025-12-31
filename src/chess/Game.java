@@ -215,6 +215,7 @@ public class Game {
 
                 Coordinates[] move = interpretMove(token, whiteToMove);
                 board.makeMove(move[0], move[1], whiteToMove, promotionChoice);
+//                System.out.println(board.toString());
                 promotionChoice = ' ';
                 whiteToMove = !whiteToMove;
             }

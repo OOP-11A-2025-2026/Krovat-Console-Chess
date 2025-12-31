@@ -239,7 +239,7 @@ public class Board {
         }
 
         // Pawn check
-        int opponentPawnDirection = isKingWhite ? 1 : -1;
+        int opponentPawnDirection = isKingWhite ? -1 : 1;
 
         int first = kingCoordinates.getFirst() + opponentPawnDirection;
 
@@ -779,6 +779,7 @@ public class Board {
             undoMove();
             return true;
         } catch (InvalidMove e) {
+//            System.out.println(e.getMessage());
             if (undoAvailable) undoMove();
             return false;
         }
