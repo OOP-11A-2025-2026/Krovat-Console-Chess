@@ -13,6 +13,10 @@ public class Game {
     private Board board;
     private String gameResult = "*";
 
+    public Game() {
+        board = new Board();
+    }
+
     // =========================
     // GAME START
     // =========================
@@ -26,7 +30,6 @@ public class Game {
 
         String choice = scanner.nextLine().trim();
         boolean whiteTurn = true;
-        board = new Board();
 
         if (choice.equals("2")) {
             System.out.print("Enter PGN filename to load: ");
