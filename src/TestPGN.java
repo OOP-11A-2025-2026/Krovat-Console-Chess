@@ -8,7 +8,7 @@ import chess.*;
 public class TestPGN {
 
     public static void main(String[] args) throws IOException {
-        Path pgnPath = Path.of("Krovat-Console-Chess/tests/Akobian.pgn"); // your attached file
+        Path pgnPath = Path.of("Krovat-Console-Chess/tests/Anand.pgn"); // your attached file
 
         if (!Files.exists(pgnPath)) {
             System.err.println("PGN file not found: " + pgnPath.toAbsolutePath());
