@@ -228,6 +228,7 @@ public class Game {
     // =========================
     public Coordinates[] interpretMove(String notation, boolean whiteTurn) {
 
+        // Removes unneeded symbols in the notation
         notation = notation.replace("+", "").replace("#", "");
 
         // Castling
@@ -241,7 +242,7 @@ public class Game {
             return new Coordinates[]{ new Coordinates(row, 4), new Coordinates(row, 2) };
         }
 
-        // Promotion
+        // Promotion - saves promotion choice if given, default is queen
         if (notation.contains("=")) {
             promotionChoice = notation.charAt(notation.length() - 1);
             notation = notation.substring(0, notation.indexOf("="));
@@ -251,6 +252,7 @@ public class Game {
         boolean isCapture = notation.contains("x");
         notation = notation.replace("x", "");
 
+        // Finding where the piece is going (to) coordinates
         char file = notation.charAt(notation.length() - 2);
         char rank = notation.charAt(notation.length() - 1);
         Coordinates to = parseSquare(file, rank);
@@ -260,7 +262,8 @@ public class Game {
                 ? notation.charAt(0)
                 : 'P';
 
-        // Disambiguation
+        // Disambiguation by file or rank
+        // Does not work if we need disambiguation by file AND rank
         Character disFile = null;
         Character disRank = null;
 
@@ -275,6 +278,7 @@ public class Game {
             disFile = notation.charAt(0);
         }
 
+        // candidates contains all the possible squares the piece was on (from)
         ArrayList<Coordinates> candidates = new ArrayList<>();
 
         for (int i = 0; i < 8; i++) {
@@ -282,25 +286,30 @@ public class Game {
                 Coordinates from = new Coordinates(i, j);
                 Piece p = board.getPiece(from);
 
+                // Skipping a square if there isn't a piece on it, if the piece is the wrong type or color
                 if (p == null) continue;
                 if (p.isWhite() != whiteTurn) continue;
                 if (!matchesPiece(p, pieceChar)) continue;
 
+                // Skipping a piece if it does not match the file/rank disambiguation
                 if (disFile != null && j != disFile - 'a') continue;
                 if (disRank != null && i != 8 - (disRank - '0')) continue;
 
                 char promotion = promotionChoice == ' ' ? 'Q' : promotionChoice;
 
+                // Checking if the move is legal, if it isn't it is not a valid candidate
                 if (board.isLegalMove(from, to, whiteTurn, promotion)) {
                     candidates.add(from);
                 }
             }
         }
 
+        // No candidates
         if (candidates.isEmpty()) {
             throw new InvalidMove("No legal move found for notation: " + notation);
         }
 
+        // More than one candidate
         if (candidates.size() > 1) {
             throw new InvalidMove("Ambiguous SAN: " + notation);
         }
@@ -311,10 +320,13 @@ public class Game {
     // =========================
     // HELPERS
     // =========================
+
+    // parseSquare returns a set of Coordinates by given file and rank
     private Coordinates parseSquare(char file, char rank) {
         return new Coordinates(8 - (rank - '0'), file - 'a');
     }
 
+    // Matches a char in the notation to an instance of an object (a Piece)
     private static boolean matchesPiece(Piece p, char c) {
         return switch (c) {
             case 'P' -> p instanceof Pawn;

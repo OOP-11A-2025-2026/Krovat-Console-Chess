@@ -1,7 +1,6 @@
 package chess;
 
 abstract public class Piece {
-    //regularMovement, color (black or white)
     private final boolean isWhite;
     private final char symbol;
 

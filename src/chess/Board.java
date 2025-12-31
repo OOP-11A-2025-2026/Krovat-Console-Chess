@@ -13,71 +13,73 @@ public class Board {
 
     // INSTRUCTIONS - each block of comments is a different function
     // There are explanations to what the function should do
-    // The suggestions are to guide you, they don't have to be strictly followed
-    // You can change things the function name or algorithm if you think of a better one etc.
-    // The parameters are not written, you choose them
-    // Make sure your function works for both black and white
-    // Write your code below the block of comments for the function
-    // There are probably things I missed or got wrong so proceed with caution
-    // Do your best and good luck! - Iveto :)
+    // The function should work for both black and white
 
     // Default constructor - new game
-    // The board has to be set up with the beginning positions of the pieces:
+    // The board is set up with the beginning positions of the pieces:
     // Rooks in the corners, Knights next to the rooks etc.
     // Above is black in lowercase letters, below is white in uppercase letters
     public Board() {
         squares = new Piece[8][8];
 
+        // Pawns
         for (int j = 0; j < 8; j++) {
             squares[1][j] = new Pawn(false);
             squares[6][j] = new Pawn(true);
         }
 
+        // Rooks
         squares[0][0] = new Rook(false);
         squares[0][7] = new Rook(false);
         squares[7][0] = new Rook(true);
         squares[7][7] = new Rook(true);
 
+        // Knights
         squares[0][1] = new Knight(false);
         squares[0][6] = new Knight(false);
         squares[7][1] = new Knight(true);
         squares[7][6] = new Knight(true);
 
+        // Bishops
         squares[0][2] = new Bishop(false);
         squares[0][5] = new Bishop(false);
         squares[7][2] = new Bishop(true);
         squares[7][5] = new Bishop(true);
 
+        // Queens
         squares[0][3] = new Queen(false);
         squares[7][3] = new Queen(true);
 
+        // Kings
         squares[0][4] = new King(false);
         squares[7][4] = new King(true);
     }
 
-    // Load constructor - load game
+    // Constructor with parameters - load game
     // This constructor accepts a Piece[8][8] array and COPIES its elements in squares
-    // Make sure it is a deep copy and not a shallow one
-    // Do not forget input validation
+    // It is a deep copy, not a shallow one
+    // The input is validated
     public Board(Piece[][] squares) {
         this.squares = new Piece[8][8];
 
+        // Input array length validation
         if(squares.length != 8) throw new IllegalArgumentException("Invalid array length");
         for (Piece[] row : squares) {
             if (row.length != 8) throw new IllegalArgumentException("Invalid array length");
         }
 
+        // Copying the pieces
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 if (squares[i][j] != null) {
-                    this.squares[i][j] = squares[i][j].copy(); // Had to make a copy method to ensure deep copy
+                    this.squares[i][j] = squares[i][j].copy(); // Had to make a copy method to ensure a deep copy
                 }
-                else throw new IllegalArgumentException("Invalid array element");
+//                 else throw new IllegalArgumentException("Invalid array element");
             }
         }
     }
 
-    // Saves a snapshot of the board
+    // Saves a snapshot of the board in undoSquares
     private void saveUndoState() {
         undoSquares = new Piece[8][8];
         for (int i = 0; i < 8; i++) {
@@ -109,7 +111,7 @@ public class Board {
     }
 
     // Helper method
-    // Gets the coordinates of one of the kings
+    // Gets the coordinates of a king by given color
     private Coordinates getKingCoordinates(boolean isKingWhite) {
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
@@ -132,7 +134,7 @@ public class Board {
         Coordinates kingCoordinates = getKingCoordinates(isKingWhite);
 
         Piece piece;
-        // Checking down
+        // Checking down - Queens and Rooks
         for(int i = kingCoordinates.getFirst() + 1; i < 8; i++) {
             piece = squares[i][kingCoordinates.getSecond()];
             if(piece == null) continue;
@@ -143,7 +145,7 @@ public class Board {
             else break;
         }
 
-        // Checking up
+        // Checking up - Queens and Rooks
         for(int i = kingCoordinates.getFirst() - 1; i >= 0; i--) {
             piece = squares[i][kingCoordinates.getSecond()];
             if(piece == null) continue;
@@ -154,7 +156,7 @@ public class Board {
             else break;
         }
 
-        // Checking right
+        // Checking right - Queens and Rooks
         for(int i = kingCoordinates.getSecond() + 1; i < 8; i++) {
             piece = squares[kingCoordinates.getFirst()][i];
             if(piece == null) continue;
@@ -165,7 +167,7 @@ public class Board {
             else break;
         }
 
-        // Checking left
+        // Checking left - Queens and Rooks
         for(int i = kingCoordinates.getSecond() - 1; i >= 0; i--) {
             piece = squares[kingCoordinates.getFirst()][i];
             if(piece == null) continue;
@@ -176,7 +178,7 @@ public class Board {
             else break;
         }
 
-        // Checking down right
+        // Checking down right diagonal - Queens and Bishops
         for (int i = 1; kingCoordinates.getFirst() + i < 8 && kingCoordinates.getSecond() + i < 8; i++) {
 
             piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() + i];
@@ -188,7 +190,7 @@ public class Board {
             else break;
         }
 
-        // Checking down left
+        // Checking down left diagonal - Queens and Bishops
         for (int i = 1; kingCoordinates.getFirst() + i < 8 && kingCoordinates.getSecond() - i >= 0; i++) {
 
             piece = squares[kingCoordinates.getFirst() + i][kingCoordinates.getSecond() - i];
@@ -199,7 +201,7 @@ public class Board {
             } else break;
         }
 
-        // Checking up right
+        // Checking up right diagonal - Queens and Bishops
         for (int i = 1; kingCoordinates.getFirst() - i >= 0 && kingCoordinates.getSecond() + i < 8; i++) {
 
             piece = squares[kingCoordinates.getFirst() - i][kingCoordinates.getSecond() + i];
@@ -211,7 +213,7 @@ public class Board {
             else break;
         }
 
-        // Checking up left
+        // Checking up left diagonal - Queens and Bishops
         for (int i = 1; kingCoordinates.getFirst() - i >= 0 && kingCoordinates.getSecond() - i >= 0; i++) {
 
             piece = squares[kingCoordinates.getFirst() - i][kingCoordinates.getSecond() - i];
@@ -259,7 +261,7 @@ public class Board {
             }
         }
 
-        // IDK if it is needed
+        // IDK if it is needed but just in case
         // Enemy king adjacency check
         for (int dr = -1; dr <= 1; dr++) {
             for (int dc = -1; dc <= 1; dc++) {
@@ -420,10 +422,11 @@ public class Board {
 
     // checkCollision()
     // This function checks if there are any pieces between 2 sets of coordinates
+    // It does not count as a collision if there is a piece on the given sets of coordinates
     private boolean checkCollision(Coordinates from, Coordinates to) {
         if(from == null || to == null) throw new IllegalArgumentException("Coordinates cannot be null");
 
-        // Up movement
+        // Row (up and/or down) collision
         if(from.getFirst() == to.getFirst()) {
             int maxSecond = Math.max(to.getSecond(), from.getSecond());
             int minSecond = Math.min(to.getSecond(), from.getSecond());
@@ -435,7 +438,7 @@ public class Board {
             }
         }
 
-        // Down movement
+        // Column (left and/or right) collision
         else if(from.getSecond() == to.getSecond()) {
             int maxFirst = Math.max(to.getFirst(), from.getFirst());
             int minFirst = Math.min(to.getFirst(), from.getFirst());
@@ -447,7 +450,7 @@ public class Board {
             }
         }
 
-        // Diagonal movement
+        // Diagonal collision
         else if(Math.abs(from.getSecond() - to.getSecond()) == Math.abs(from.getFirst() - to.getFirst())) {
             int rowStep = Integer.compare(to.getFirst(), from.getFirst());
             int colStep = Integer.compare(to.getSecond(), from.getSecond());
@@ -470,14 +473,13 @@ public class Board {
     }
 
     // makeMove()
-    // gets info from game for the next move - what piece and where it's moving
-    // every odd turn is White, every even turn is Black
+    // gets info from game for the next move - what piece and where it's moving, whose turn it is and what is it promoting to
     // This function handles move validation and updating the board:
     // calls checkCastle() and depending on the result calls castle()
-    // If castle() is called the function should end in some way
+    // If castle() is called the function ends
     // There is no reason to continue checking if the move was made
     // calls checkEnPassant() -> EnPassant() (same as checkCastle() and castle())
-    // If EnPassant() is called the function should end in some way
+    // If EnPassant() is called the function ends
     // calls regular movement - this should be a method every piece has, because every piece moves differently
     // It checks if the piece is moving how it should be and throws an exception if needed:
     // Rooks move up and down, Kings move only one square in all directions and etc.
@@ -489,16 +491,22 @@ public class Board {
     // calls checkStalemate(after the move) and maybe returns a draw or something like that
     public int makeMove(Coordinates from, Coordinates to, boolean isWhiteTurn, char promotionChoice) {
 
+        // Input validation
+
+        // Coordinates validation
         if (from == null || to == null) throw new IllegalArgumentException("Coordinates cannot be null");
 
         Piece moving = getPiece(from);
         if (moving == null) throw new InvalidMove("No piece on starting square");
 
+        // Turn validation
         if (moving.isWhite() != isWhiteTurn) throw new InvalidMove("Not your turn");
 
+        // Correct color capture validation
         Piece target = getPiece(to);
         if (target != null && target.isWhite() == isWhiteTurn) throw new InvalidMove("Cannot capture your own piece");
 
+        // Castling
         if (moving instanceof King) {
             if (checkCastle(from, to)) {
                 saveUndoState();
@@ -507,6 +515,7 @@ public class Board {
             }
         }
 
+        // En Passant
         if (moving instanceof Pawn) {
             if (checkEnPassant(from, to)) {
                 saveUndoState();
@@ -516,9 +525,11 @@ public class Board {
             }
         }
 
+        // Is the piece moving by its rules - regularMovement
         if (!moving.regularMovement(from, to))
             throw new InvalidMove("Illegal movement");
 
+        // Pawn movement and capture extra checks
         if (moving instanceof Pawn) {
             int colDiff = Math.abs(to.getSecond() - from.getSecond());
             if (colDiff == 1 && target == null) {
@@ -529,16 +540,20 @@ public class Board {
             }
         }
 
+        // Collision with other pieces except the knight
         if (!(moving instanceof Knight) && checkCollision(from, to))
             throw new InvalidMove("Path blocked");
 
+        // checkPin also calls checkCheck so if we are in check and the move does not save the king it will be an invalid move
         checkPin(from, to);
 
         saveUndoState();
 
+        // Moving the piece
         squares[to.getFirst()][to.getSecond()] = moving;
         squares[from.getFirst()][from.getSecond()] = null;
 
+        // Updating movement flags
         if(moving instanceof Rook) {
             ((Rook) moving).setHasMoved(true);
         }
@@ -549,6 +564,7 @@ public class Board {
             ((King) moving).setHasMoved(true);
         }
 
+        // Updating En Passant flags and promotion check
         resetAllEnPassantEligibility();
 
         if (moving instanceof Pawn) {
@@ -564,6 +580,7 @@ public class Board {
             promotion(to, promotionChoice);
         }
 
+        // Checking if the game ended in a stalemate or a mate
         boolean opponentWhite = !moving.isWhite();
 
         if (checkMate(opponentWhite)) {
@@ -754,8 +771,7 @@ public class Board {
     }
 
     // isLegalMove()
-    // Comments?
-    //
+    // Checks if a move is legal without permanently altering the game board
     public boolean isLegalMove(Coordinates from, Coordinates to, boolean isWhiteTurn, char promotionChoice) {
         try {
             saveUndoState();

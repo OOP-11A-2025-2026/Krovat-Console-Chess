@@ -1,5 +1,6 @@
 package chess;
 
+// A utility class used for easier work with the coordinates of a chess board
 public class Coordinates {
     private int first;
     private int second;
