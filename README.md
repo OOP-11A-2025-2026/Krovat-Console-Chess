@@ -100,7 +100,7 @@ The White and Black player's game of chess takes place in an infinite loop, unti
 The Board class holds the whole game logic, while Game - the whole outer logic (user input and file integration).
 
 ### 5. Our team. Who worked on what
-- Ivaneta - Board instructions, constructors, toString, getKingCoordinates, checkCheck, checkCollision, saveUndoState, undoMove, makeMove and isLegalMove methods, Piece, Coordinates, Queen, copy method and copy constructors in all pieces, InvalidMove, README, Game interpretMove
+- Ivaneta - Board instructions, constructors, toString, getKingCoordinates, checkCheck, checkCollision, saveUndoState, undoMove, makeMove and isLegalMove methods, Piece, Coordinates, Queen, copy method and copy constructors in all pieces, InvalidMove, README, Game.interpretMove, TestPGN
 - Viktor - Knight, King, Board checkMate, checkStalemate and hasValidMoves, README, presentation
 - Samuil - Pawn, Board promotion, checkEnPassant, enPassant, getPiece, resetAllEnPassantEligibility and checkPin, Game interpretMove (first version)
 - Ignat - Rook, Bishop, Board checkCastle and castle

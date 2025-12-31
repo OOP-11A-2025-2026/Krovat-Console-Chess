@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -5,20 +6,25 @@ import java.util.ArrayList;
 import java.util.List;
 import chess.*;
 
+// Stress tests a .pgn file with thousands of games
+
 public class TestPGN {
 
     public static void main(String[] args) throws IOException {
-        Path pgnPath = Path.of("Krovat-Console-Chess/tests/Anand.pgn"); // your attached file
+        Path pgnPath = Path.of("Krovat-Console-Chess/tests/Anand.pgn"); // Path to the file to test
 
+        // Check if a file exists
         if (!Files.exists(pgnPath)) {
-            System.err.println("PGN file not found: " + pgnPath.toAbsolutePath());
-            return;
+//            System.out.println("PGN file not found: " + pgnPath.toAbsolutePath());
+            throw new FileNotFoundException("PGN file not found: " + pgnPath.toAbsolutePath());
         }
 
         try {
+            // Reads all content from a file into a String and splits all the games
             String fullPgn = Files.readString(pgnPath);
             List<String> games = splitIntoGames(fullPgn);
 
+            // To keep track of how many tests passes or not
             int passed = 0;
             int failed = 0;
 
@@ -31,16 +37,18 @@ public class TestPGN {
                     tempFile = Files.createTempFile("pgn_test_game_" + i, ".pgn");
                     Files.writeString(tempFile, gamePgn);
 
+                    // Load the game to see if it throws any exceptions
                     Game game = new Game();
                     game.loadGame(tempFile.toString());
 
+                    // Didn't throw an exception so it passed
                     passed++;
                 } catch (Exception e) {
+                    // Exception thrown so it failed
                     failed++;
-                    System.err.println("Exception in game #" + (i + 1));
-                    e.printStackTrace();
+                    System.out.println("Exception in game #" + (i + 1));
                 } finally {
-                    // Ensure temp file is always released
+                    // To ensure temp file is always removed
                     if (tempFile != null) {
                         try {
                             Files.deleteIfExists(tempFile);
@@ -56,27 +64,28 @@ public class TestPGN {
             System.out.println("Failed: " + failed);
 
         } catch (IOException e) {
-            System.err.println("Failed to read PGN file:");
-            e.printStackTrace();
+//            System.out.println("Failed to read PGN file:");
+            throw new IOException("Failed to read PGN file: " + e.getMessage());
         }
     }
 
 
      // Splits a PGN file containing multiple games into individual game PGNs.
-     // Metadata is preserved (Game.loadGame later ignores it).
+     // Metadata is preserved (Game.loadGame later ignores it)
      private static List<String> splitIntoGames(String pgn) {
         List<String> games = new ArrayList<>();
 
-        // Each PGN game starts with an [Event ...] tag
+        // Each PGN game starts with an [Event ...] meta tag
         String[] rawGames = pgn.split("(?=\\[Event )");
 
-        for (String g : rawGames) {
-            g = g.trim();
-            if (g.isEmpty()) continue;
+        for (String game : rawGames) {
+            game = game.trim();
+            if (game.isEmpty()) continue;
 
-            // Only keep finished games
-            if (g.contains("1-0") || g.contains("0-1") || g.contains("1/2-1/2")) {
-                games.add(g);
+            // Only keep finished games to test
+            // There probably won't be any problems to test unfinished games, but we decided to test only finished ones
+            if (game.contains("1-0") || game.contains("0-1") || game.contains("1/2-1/2")) {
+                games.add(game);
             }
         }
 
